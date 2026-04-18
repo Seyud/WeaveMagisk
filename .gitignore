@@ -15,8 +15,6 @@ native/out
 local.properties
 .cursor
 ramdisk.img
-app/core/src/debug
-app/core/src/release
 app/apk/release
 app/gradle/gradle-daemon-jvm.properties
 
