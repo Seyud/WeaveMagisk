@@ -170,6 +170,8 @@
     <string name="setting_add_shortcut_summary">Aggiungi un collegamento alla schermata iniziale se il nome e l\'icona sono difficili da riconoscere dopo aver nascosto l\'app</string>
     <string name="settings_doh_title">DNS over HTTPS</string>
     <string name="settings_doh_description">Aggira il DNS poisoning in alcune nazioni</string>
+    <string name="settings_random_name_title">Genera un nome casuale per l\’output</string>
+    <string name="settings_random_name_description">Rendi casuale il nome del file di output delle immagini con patch e dei file tar per evitarne il rilevamento</string>
 
     <string name="multiuser_mode">Modalità multiutente</string>
     <string name="settings_owner_only">Solo per il proprietario del dispositivo</string>
