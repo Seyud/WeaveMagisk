@@ -83,7 +83,12 @@ Version config: `app/gradle.properties` (`magisk.versionCode`, `magisk.stubVersi
 - AVD tests: `scripts/avd.sh test <api_version>` — requires pre-built APKs
 - Cuttlefish tests: `scripts/cuttlefish.sh` — for virtual device testing
 - Test APK: `./build.py test` — builds UIAutomator test APK, always as release
-- CI runs AVD tests on API 23-37 + CANARY, both x86 and x86_64
+- CI runs AVD tests on API 30-36 + 36.1 + 37.0 + CANARY (x86_64), API 30 (x86)
+- CI test jobs only run on `workflow_dispatch` (manual trigger), not on push
+- `test_common.sh` uses `$self` (TestRunner) for `testAppHide`/`testAppRestore`, `$app` (AppTestRunner) for others
+- `BaseTest.prerequisite()` must match upstream: `Shell.getShell().isRoot` + `Connection.await()`. No UI operations (launchTargetApp, grant prompts, UiDevice)
+- `AppMigrationTest` must stay in `app/test/` module (not `app/core/`) — `TestRunner` classloader can't find classes in core module after app repackaging
+- API 23-29 removed from CI matrix: API 23 < minSdk 24; API 24-29 have RootService compatibility issues
 
 ## Code Style
 
