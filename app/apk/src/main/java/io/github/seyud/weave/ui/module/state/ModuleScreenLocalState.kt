@@ -10,18 +10,11 @@ import io.github.seyud.weave.ui.component.SearchStatus
 
 @Stable
 internal class ModuleScreenLocalState internal constructor(
-    private val hasStartedLoadingState: MutableState<Boolean>,
     private val searchStatusState: MutableState<SearchStatus>,
     private val showTopPopupState: MutableState<Boolean>,
     private val showShortcutDialogState: MutableState<Boolean>,
     private val showShortcutTypeDialogState: MutableState<Boolean>,
 ) {
-    var hasStartedLoading: Boolean
-        get() = hasStartedLoadingState.value
-        set(value) {
-            hasStartedLoadingState.value = value
-        }
-
     var searchStatus: SearchStatus
         get() = searchStatusState.value
         set(value) {
@@ -51,7 +44,6 @@ internal class ModuleScreenLocalState internal constructor(
 internal fun rememberModuleScreenLocalState(
     searchModulesLabel: String,
 ): ModuleScreenLocalState {
-    val hasStartedLoadingState = rememberSaveable { mutableStateOf(false) }
     val searchStatusState = remember(searchModulesLabel) {
         mutableStateOf(SearchStatus(label = searchModulesLabel))
     }
@@ -60,14 +52,12 @@ internal fun rememberModuleScreenLocalState(
     val showShortcutTypeDialogState = rememberSaveable { mutableStateOf(false) }
 
     return remember(
-        hasStartedLoadingState,
         searchStatusState,
         showTopPopupState,
         showShortcutDialogState,
         showShortcutTypeDialogState,
     ) {
         ModuleScreenLocalState(
-            hasStartedLoadingState = hasStartedLoadingState,
             searchStatusState = searchStatusState,
             showTopPopupState = showTopPopupState,
             showShortcutDialogState = showShortcutDialogState,

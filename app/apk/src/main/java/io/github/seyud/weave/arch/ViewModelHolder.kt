@@ -9,6 +9,8 @@ import io.github.seyud.weave.core.di.ServiceLocator
 import io.github.seyud.weave.ui.home.HomeViewModel
 import io.github.seyud.weave.ui.install.InstallViewModel
 import io.github.seyud.weave.ui.log.LogViewModel
+import io.github.seyud.weave.ui.module.ModuleViewModel
+import io.github.seyud.weave.ui.module.state.ModulePreferencesRepository
 import io.github.seyud.weave.ui.modulerepo.ModuleRepoViewModel
 import io.github.seyud.weave.ui.superuser.SuperuserViewModel
 import io.github.seyud.weave.ui.surequest.SuRequestViewModel
@@ -35,6 +37,8 @@ object VMFactory : ViewModelProvider.Factory {
             HomeViewModel::class.java -> HomeViewModel(ServiceLocator.networkService)
             LogViewModel::class.java -> LogViewModel(ServiceLocator.logRepo)
             ModuleRepoViewModel::class.java -> ModuleRepoViewModel()
+            ModuleViewModel::class.java ->
+                ModuleViewModel(ModulePreferencesRepository(ServiceLocator.settingsPrefs))
             SuperuserViewModel::class.java -> SuperuserViewModel(ServiceLocator.policyDB)
             InstallViewModel::class.java ->
                 InstallViewModel(ServiceLocator.networkService, ServiceLocator.markwon)

@@ -23,7 +23,6 @@ import io.github.seyud.weave.ui.module.components.ModuleSearchResultsHost
 import io.github.seyud.weave.ui.module.dialogs.ModuleScreenDialogs
 import io.github.seyud.weave.ui.module.state.rememberLocalModulePicker
 import io.github.seyud.weave.ui.module.state.rememberModuleScreenLocalState
-import io.github.seyud.weave.ui.module.state.rememberModuleSortPreferences
 import io.github.seyud.weave.ui.module.state.rememberShortcutIconPicker
 import io.github.seyud.weave.ui.theme.LocalEnableBlur
 import io.github.seyud.weave.ui.util.rememberBarBlurBackdrop
@@ -53,7 +52,6 @@ fun ModuleScreen(
     val uiState = viewModel.uiState
     val searchModulesLabel = stringResource(CoreR.string.search_modules_label)
     val localState = rememberModuleScreenLocalState(searchModulesLabel)
-    val sortPreferences = rememberModuleSortPreferences(context)
     val shortcutState = rememberModuleShortcutState(context)
     val launchLocalModulePicker = rememberLocalModulePicker(
         onModulePicked = viewModel::requestInstallLocalModule,
@@ -94,26 +92,15 @@ fun ModuleScreen(
         }
     }
 
-    LaunchedEffect(localState.hasStartedLoading) {
-        if (!localState.hasStartedLoading) {
-            localState.hasStartedLoading = true
-            sortPreferences.restore(viewModel)
-            viewModel.startLoading()
-        }
+    LaunchedEffect(Unit) {
+        viewModel.initializePreferences()
+        viewModel.startLoading()
     }
 
     LaunchedEffect(localState.searchStatus.searchText) {
         if (uiState.query != localState.searchStatus.searchText) {
             viewModel.setQuery(localState.searchStatus.searchText)
         }
-    }
-
-    LaunchedEffect(
-        uiState.sortEnabledFirst,
-        uiState.sortUpdateFirst,
-        uiState.sortExecutableFirst,
-    ) {
-        sortPreferences.persist(uiState)
     }
 
     val scope = rememberCoroutineScope()
@@ -188,15 +175,9 @@ fun ModuleScreen(
                     showTopPopup = localState.showTopPopup,
                     onShowTopPopupChange = { localState.showTopPopup = it },
                     onOpenRepo = onOpenRepo,
-                    onToggleSortEnabledFirst = {
-                        viewModel.setSortEnabledFirst(!uiState.sortEnabledFirst)
-                    },
-                    onToggleSortUpdateFirst = {
-                        viewModel.setSortUpdateFirst(!uiState.sortUpdateFirst)
-                    },
-                    onToggleSortExecutableFirst = {
-                        viewModel.setSortExecutableFirst(!uiState.sortExecutableFirst)
-                    },
+                    onToggleSortEnabledFirst = viewModel::toggleSortEnabledFirst,
+                    onToggleSortUpdateFirst = viewModel::toggleSortUpdateFirst,
+                    onToggleSortExecutableFirst = viewModel::toggleSortExecutableFirst,
                 )
             },
             content = { innerPadding ->

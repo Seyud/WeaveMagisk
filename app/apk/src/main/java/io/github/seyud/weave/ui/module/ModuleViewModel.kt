@@ -9,6 +9,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import io.github.seyud.weave.arch.AsyncLoadViewModel
 import io.github.seyud.weave.core.Info
+import io.github.seyud.weave.ui.module.state.ModulePreferencesRepository
+import io.github.seyud.weave.ui.module.state.SortOptions
 import io.github.seyud.weave.core.base.ContentResultCallback
 import io.github.seyud.weave.core.di.ServiceLocator
 import io.github.seyud.weave.core.model.module.LocalModule
@@ -54,7 +56,9 @@ data class ModuleUiState(
  * 模块页 ViewModel
  * 使用纯 Compose 状态管理驱动模块页状态
  */
-class ModuleViewModel : AsyncLoadViewModel() {
+class ModuleViewModel(
+    private val prefsRepo: ModulePreferencesRepository,
+) : AsyncLoadViewModel() {
 
     sealed interface ModuleEvent {
         data class ShowSnackbar(
@@ -114,30 +118,45 @@ class ModuleViewModel : AsyncLoadViewModel() {
         publishFilteredModules()
     }
 
-    fun setSortEnabledFirst(enabled: Boolean) {
-        _uiState.value = _uiState.value.copy(sortEnabledFirst = enabled)
-        publishFilteredModules()
-    }
-
-    fun setSortUpdateFirst(enabled: Boolean) {
-        _uiState.value = _uiState.value.copy(sortUpdateFirst = enabled)
-        publishFilteredModules()
-    }
-
-    fun setSortExecutableFirst(enabled: Boolean) {
-        _uiState.value = _uiState.value.copy(sortExecutableFirst = enabled)
-        publishFilteredModules()
-    }
-
-    fun restoreSortOptions(
-        sortEnabledFirst: Boolean,
-        sortUpdateFirst: Boolean,
-        sortExecutableFirst: Boolean,
-    ) {
+    /**
+     * 从持久化存储恢复排序选项（每次进入页面无条件调用）
+     */
+    fun initializePreferences() {
+        val options = prefsRepo.loadSortOptions()
         _uiState.value = _uiState.value.copy(
-            sortEnabledFirst = sortEnabledFirst,
-            sortUpdateFirst = sortUpdateFirst,
-            sortExecutableFirst = sortExecutableFirst,
+            sortEnabledFirst = options.enabledFirst,
+            sortUpdateFirst = options.updateFirst,
+            sortExecutableFirst = options.executableFirst,
+        )
+        publishFilteredModules()
+    }
+
+    fun toggleSortEnabledFirst() {
+        val newValue = !_uiState.value.sortEnabledFirst
+        _uiState.value = _uiState.value.copy(sortEnabledFirst = newValue)
+        persistAndRepublish()
+    }
+
+    fun toggleSortUpdateFirst() {
+        val newValue = !_uiState.value.sortUpdateFirst
+        _uiState.value = _uiState.value.copy(sortUpdateFirst = newValue)
+        persistAndRepublish()
+    }
+
+    fun toggleSortExecutableFirst() {
+        val newValue = !_uiState.value.sortExecutableFirst
+        _uiState.value = _uiState.value.copy(sortExecutableFirst = newValue)
+        persistAndRepublish()
+    }
+
+    private fun persistAndRepublish() {
+        val s = _uiState.value
+        prefsRepo.saveSortOptions(
+            SortOptions(
+                enabledFirst = s.sortEnabledFirst,
+                updateFirst = s.sortUpdateFirst,
+                executableFirst = s.sortExecutableFirst,
+            )
         )
         publishFilteredModules()
     }

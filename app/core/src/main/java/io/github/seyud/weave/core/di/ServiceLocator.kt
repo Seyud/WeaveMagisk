@@ -22,6 +22,9 @@ object ServiceLocator {
     val deContext by lazy { AppContext.deviceProtectedContext }
     val timeoutPrefs by lazy { deContext.getSharedPreferences("su_timeout", 0) }
 
+    // Preferences
+    val settingsPrefs by lazy { AppContext.getSharedPreferences("settings", Context.MODE_PRIVATE) }
+
     // Database
     val policyDB = PolicyDao()
     val settingsDB = SettingsDao()

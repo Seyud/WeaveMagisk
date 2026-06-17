@@ -245,6 +245,7 @@ private fun JSONObject.optAnyInt(name: String): Int? {
     return when (value) {
         is Number -> value.toInt()
         is String -> value.toIntOrNull()
+        null -> null
         else -> null
     }
 }
