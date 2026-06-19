@@ -378,4 +378,8 @@
     <string name="settings_page_scale">界面缩放</string>
     <string name="settings_page_scale_summary">调整全局显示比例</string>
 
+    <!-- Module Banner -->
+    <string name="settings_banner">模块横幅</string>
+    <string name="settings_banner_summary">在模块卡片背景显示横幅图片</string>
+
 </resources>

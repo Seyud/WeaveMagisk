@@ -26,6 +26,7 @@ import androidx.compose.material.icons.rounded.CallToAction
 import androidx.compose.material.icons.rounded.Colorize
 import androidx.compose.material.icons.rounded.Palette
 import androidx.compose.material.icons.rounded.WaterDrop
+import androidx.compose.material.icons.rounded.ViewCarousel
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
@@ -79,6 +80,7 @@ fun ColorPaletteScreen(
     var enableBlurState by rememberSaveable { mutableStateOf(Config.enableBlur) }
     var enableFloatingBottomBar by rememberSaveable { mutableStateOf(Config.enableFloatingBottomBar) }
     var enableFloatingBottomBarBlur by rememberSaveable { mutableStateOf(Config.enableFloatingBottomBarBlur) }
+    var useBanner by rememberSaveable { mutableStateOf(Config.useBanner) }
     var sliderValue by rememberSaveable { mutableFloatStateOf(Config.pageScale) }
     val showScaleDialog = rememberSaveable { mutableStateOf(false) }
 
@@ -310,6 +312,24 @@ fun ColorPaletteScreen(
                                 }
                             )
                         }
+
+                        SwitchPreference(
+                            title = stringResource(id = CoreR.string.settings_banner),
+                            summary = stringResource(id = CoreR.string.settings_banner_summary),
+                            startAction = {
+                                Icon(
+                                    Icons.Rounded.ViewCarousel,
+                                    modifier = Modifier.padding(end = 6.dp),
+                                    contentDescription = stringResource(id = CoreR.string.settings_banner),
+                                    tint = colorScheme.onBackground
+                                )
+                            },
+                            checked = useBanner,
+                            onCheckedChange = {
+                                Config.useBanner = it
+                                useBanner = it
+                            }
+                        )
                     }
 
                     // Predictive back / Page scale section

@@ -32,6 +32,7 @@ data class ModuleInfo(
     val actionIconPath: String?,
     val webUiIconPath: String?,
     val outdated: Boolean,
+    val banner: String = "",
 ) {
     /**
      * 是否显示警告信息
@@ -112,6 +113,7 @@ data class ModuleInfo(
                 actionIconPath = localModule.actionIconPath,
                 webUiIconPath = localModule.webUiIconPath,
                 outdated = localModule.outdated,
+                banner = localModule.banner,
             )
         }
     }

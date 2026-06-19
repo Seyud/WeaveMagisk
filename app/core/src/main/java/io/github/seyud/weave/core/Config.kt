@@ -69,6 +69,7 @@ object Config : PreferenceConfig, DBConfig {
         const val PAGE_SCALE = "page_scale"
         const val HOME_LAYOUT_MODE = "home_layout_mode"
         const val APP_ICON_VARIANT = "app_icon_variant"
+        const val USE_BANNER = "use_banner"
 
         val NO_MIGRATION = setOf(
             ASKED_HOME,
@@ -161,6 +162,7 @@ object Config : PreferenceConfig, DBConfig {
     var pageScale by preference(Key.PAGE_SCALE, 1.0f)
     var homeLayoutMode by preference(Key.HOME_LAYOUT_MODE, Value.HOME_LAYOUT_CLASSIC)
     var appIconVariant by preference(Key.APP_ICON_VARIANT, "current")
+    var useBanner by preference(Key.USE_BANNER, false)
 
     var enableBlur
         get() = enableBlurPrefs

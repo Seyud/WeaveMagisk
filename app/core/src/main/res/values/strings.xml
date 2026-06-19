@@ -383,4 +383,8 @@
     <string name="settings_page_scale">Page scale</string>
     <string name="settings_page_scale_summary">Adjust the global display scale</string>
 
+    <!-- Module Banner -->
+    <string name="settings_banner">Module banner</string>
+    <string name="settings_banner_summary">Show banner image as module card background</string>
+
 </resources>

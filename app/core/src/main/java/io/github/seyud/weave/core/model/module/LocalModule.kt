@@ -27,6 +27,7 @@ data class LocalModule(
     var outdated = false
     var actionIconPath: String? = null
     var webUiIconPath: String? = null
+    var banner: String = ""
     private var updateUrl: String = ""
 
     private val removeFile = base.getChildFile("remove")
@@ -99,6 +100,11 @@ data class LocalModule(
                 "updateJson" -> updateUrl = value
                 "actionIcon" -> actionIconPath = resolveModuleFilePath(value)
                 "webuiIcon" -> webUiIconPath = resolveModuleFilePath(value)
+                "banner" -> banner = if (value.startsWith("http://", ignoreCase = true) || value.startsWith("https://", ignoreCase = true)) {
+                    value
+                } else {
+                    resolveModuleFilePath(value) ?: ""
+                }
             }
         }
     }
