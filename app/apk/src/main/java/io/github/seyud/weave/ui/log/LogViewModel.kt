@@ -10,6 +10,9 @@ import io.github.seyud.weave.arch.AsyncLoadViewModel
 import io.github.seyud.weave.core.BuildConfig
 import io.github.seyud.weave.core.Info
 import io.github.seyud.weave.core.R
+import com.topjohnwu.superuser.CallbackList
+import com.topjohnwu.superuser.Shell
+import io.github.seyud.weave.core.ktx.await
 import io.github.seyud.weave.core.ktx.timeFormatStandard
 import io.github.seyud.weave.core.ktx.toTime
 import io.github.seyud.weave.core.model.su.SuLog
@@ -95,34 +98,41 @@ class LogViewModel(
             val filename = "magisk_log_%s.log".format(
                 System.currentTimeMillis().toTime(timeFormatStandard))
             val logFile = MediaStoreUtils.getFile(filename)
-            logFile.uri.outputStream().bufferedWriter().use { file ->
-                file.write("---Detected Device Info---\n\n")
-                file.write("isAB=${Info.isAB}\n")
-                file.write("isSAR=${Info.isSAR}\n")
-                file.write("ramdisk=${Info.ramdisk}\n")
-                val uname = Os.uname()
-                file.write("kernel=${uname.sysname} ${uname.machine} ${uname.release} ${uname.version}\n")
+            try {
+                logFile.uri.outputStream().bufferedWriter().use { file ->
+                    file.write("---Detected Device Info---\n\n")
+                    file.write("isAB=${Info.isAB}\n")
+                    file.write("isSAR=${Info.isSAR}\n")
+                    file.write("ramdisk=${Info.ramdisk}\n")
+                    val uname = Os.uname()
+                    file.write("kernel=${uname.sysname} ${uname.machine} ${uname.release} ${uname.version}\n")
 
-                file.write("\n\n---System Properties---\n\n")
-                ProcessBuilder("getprop").start()
-                    .inputStream.reader().use { it.copyTo(file) }
+                    file.write("\n\n---System Properties---\n\n")
+                    Shell.cmd("getprop").await().out.forEach { file.write("$it\n") }
 
-                file.write("\n\n---Environment Variables---\n\n")
-                System.getenv().forEach { (key, value) -> file.write("${key}=${value}\n") }
+                    file.write("\n\n---Environment Variables---\n\n")
+                    System.getenv().forEach { (key, value) -> file.write("${key}=${value}\n") }
 
-                file.write("\n\n---System MountInfo---\n\n")
-                FileInputStream("/proc/self/mountinfo").reader().use { it.copyTo(file) }
+                    file.write("\n\n---System MountInfo---\n\n")
+                    FileInputStream("/proc/self/mountinfo").reader().use { it.copyTo(file) }
 
-                file.write("\n---Magisk Logs---\n")
-                file.write("${Info.env.versionString} (${Info.env.versionCode})\n\n")
-                if (Info.env.isActive) file.write(magiskLogRaw)
+                    file.write("\n---Magisk Logs---\n")
+                    file.write("${Info.env.versionString} (${Info.env.versionCode})\n\n")
+                    if (Info.env.isActive) file.write(magiskLogRaw)
 
-                file.write("\n---Manager Logs---\n")
-                file.write("${BuildConfig.APP_VERSION_NAME} (${BuildConfig.APP_VERSION_CODE})\n\n")
-                ProcessBuilder("logcat", "-d").start()
-                    .inputStream.reader().use { it.copyTo(file) }
+                    file.write("\n---Manager Logs---\n")
+                    file.write("${BuildConfig.APP_VERSION_NAME} (${BuildConfig.APP_VERSION_CODE})\n\n")
+                    val stdout = object : CallbackList<String>(Runnable::run) {
+                        override fun onAddElement(s: String) {
+                            file.write("$s\n")
+                        }
+                    }
+                    Shell.cmd("logcat -d").to(stdout).await()
+                }
+                _event.trySend(LogEvent.ShowSnackbar(logFile.toString().asText()))
+            } catch (e: Exception) {
+                _event.trySend(LogEvent.ShowSnackbar(R.string.failure.asText()))
             }
-            _event.trySend(LogEvent.ShowSnackbar(logFile.toString().asText()))
         }
     }
 

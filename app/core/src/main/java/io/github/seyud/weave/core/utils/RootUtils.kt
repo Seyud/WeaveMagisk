@@ -127,7 +127,7 @@ class RootUtils(stub: Any?) : RootService() {
             val users = method.invoke(um, true) as? List<*>
             if (!users.isNullOrEmpty()) {
                 return users.mapNotNull { 
-                    it?.javaClass?.getMethod("getUserId")?.invoke(it) as? Int 
+                    it?.let { u -> runCatching { u.javaClass.getField("id").getInt(u) }.getOrNull() }
                 }.toIntArray()
             }
         } catch (e: Exception) {
@@ -139,7 +139,7 @@ class RootUtils(stub: Any?) : RootService() {
             val users = method.invoke(um) as? List<*>
             if (!users.isNullOrEmpty()) {
                 return users.mapNotNull { 
-                    it?.javaClass?.getMethod("getUserId")?.invoke(it) as? Int 
+                    it?.let { u -> runCatching { u.javaClass.getField("id").getInt(u) }.getOrNull() }
                 }.toIntArray()
             }
         } catch (e: Exception) {
