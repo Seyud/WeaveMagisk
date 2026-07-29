@@ -224,6 +224,33 @@ dl_main() {
   dl_emu "$avd_pkg"
 }
 
+live_test_main() {
+  local variants=("$@")
+  if [ ${#variants[@]} -eq 0 ]; then
+    if [ -z "$AVD_TEST_SKIP_DEBUG" ]; then variants+=(debug); fi
+    if [ -z "$AVD_TEST_SKIP_RELEASE" ]; then variants+=(release); fi
+  fi
+
+  for variant in "${variants[@]}"; do
+    # Cleanup
+    adb shell pm uninstall io.github.seyud.weave || true
+    adb shell pm uninstall repackaged.io.github.seyud.weave.test || true
+    adb shell /system/xbin/su 0 rm -rf /data/adb/modules
+
+    # "Install" Magisk
+    ./build.py -v emulator
+    timeout $boot_timeout bash -c wait_for_boot
+
+    run_setup $variant
+
+    # Trigger Magisk soft reboot
+    ./build.py -v emulator
+    timeout $boot_timeout bash -c wait_for_boot
+
+    run_tests
+  done
+}
+
 case "$1" in
   test )
     shift
@@ -231,6 +258,12 @@ case "$1" in
     export -f wait_for_boot
     set -x
     test_main "$@"
+    ;;
+  live-test )
+    shift
+    export -f wait_for_boot
+    set -x
+    live_test_main "$@"
     ;;
   run )
     shift
