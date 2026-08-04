@@ -16,6 +16,7 @@ import io.github.seyud.weave.core.data.magiskdb.PolicyDao
 import io.github.seyud.weave.core.ktx.await
 import io.github.seyud.weave.core.ktx.getLabel
 import io.github.seyud.weave.core.model.su.SuPolicy
+import io.github.seyud.weave.core.su.SuEvents
 import io.github.seyud.weave.core.utils.InstalledItemLoadResult
 import io.github.seyud.weave.core.utils.InstalledItemSource
 import io.github.seyud.weave.dialog.SuperuserRevokeDialog
@@ -34,6 +35,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -81,6 +83,9 @@ internal interface SuperuserPolicyStore {
     suspend fun delete(uid: Int)
     suspend fun fetchAll(): List<SuPolicy>
     suspend fun update(policy: SuPolicy)
+
+    /** 外部（su 弹窗等）对策略表的变更信号 */
+    fun observeChanges(): Flow<Unit>
 }
 
 private class PolicyDaoSuperuserPolicyStore(
@@ -93,6 +98,8 @@ private class PolicyDaoSuperuserPolicyStore(
     override suspend fun fetchAll(): List<SuPolicy> = dao.fetchAll()
 
     override suspend fun update(policy: SuPolicy) = dao.update(policy)
+
+    override fun observeChanges(): Flow<Unit> = SuEvents.policyChanged
 }
 
 private const val ROOT_REFRESH_INTERVAL_MS = 350L
@@ -159,6 +166,14 @@ class SuperuserViewModel internal constructor(
                     _listMode.value = mode
                 }
             }
+        }
+    }
+
+    init {
+        // 策略在外部变更（如 su 弹窗授权）时，实时刷新列表
+        @OptIn(kotlinx.coroutines.FlowPreview::class)
+        viewModelScope.launch {
+            db.observeChanges().debounce(500).collect { refresh() }
         }
     }
 
