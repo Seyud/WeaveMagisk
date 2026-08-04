@@ -117,7 +117,7 @@
 
     <!--MagiskHide-->
     <string name="show_system_app">显示系统应用</string>
-    <string name="show_os_app">显示操作系统</string>
+    <string name="show_os_app">显示核心应用</string>
     <string name="hide_filter_hint">按名称过滤</string>
     <string name="hide_search">搜索</string>
     <string name="search_apps_label">搜索应用</string>

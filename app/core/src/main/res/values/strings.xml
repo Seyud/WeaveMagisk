@@ -109,7 +109,7 @@
     <string name="log_data_none">You\'re log-free. Try using your root apps more.</string>
     <string name="log_data_magisk_none">Magisk logs are empty, that\'s weird.</string>
     <string name="menuSaveLog">Save log</string>
-    <string name="menuClearLog">Clear log now</string>
+    <string name="menuClearLog">Clear log</string>
     <string name="logs_cleared">Log successfully cleared</string>
     <string name="pid">PID: %1$d</string>
     <string name="target_uid">Target UID: %1$d</string>
@@ -121,7 +121,7 @@
 
     <!--MagiskHide-->
     <string name="show_system_app">Show system apps</string>
-    <string name="show_os_app">Show OS apps</string>
+    <string name="show_os_app">Show core apps</string>
     <string name="hide_filter_hint">Filter by name</string>
     <string name="hide_search">Search</string>
     <string name="search_apps_label">Search apps</string>
