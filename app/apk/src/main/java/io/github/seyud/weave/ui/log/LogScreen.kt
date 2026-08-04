@@ -54,6 +54,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.seyud.weave.core.model.su.SuLog
 import io.github.seyud.weave.core.ktx.timeDateFormat
 import io.github.seyud.weave.core.ktx.toTime
@@ -107,7 +108,7 @@ fun LogScreen(
     )
 
     val loading = viewModel.loadingState
-    val suLogs = viewModel.itemsState
+    val suLogs by viewModel.suLogs.collectAsStateWithLifecycle()
     val magiskLogs = viewModel.magiskLogEntriesState
     val enableBlur = LocalEnableBlur.current
     val surfaceColor = MiuixTheme.colorScheme.surface

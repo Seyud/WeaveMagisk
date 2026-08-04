@@ -14,6 +14,9 @@ class LogRepository(
 
     suspend fun fetchSuLogs() = logDao.fetchAll()
 
+    /** 实时观察 su 日志表，新增/清空时自动刷新 */
+    fun observeSuLogs() = logDao.observeAllClean()
+
     suspend fun fetchMagiskLogs(): String {
         val list = object : AbstractMutableList<String>() {
             val buf = StringBuilder()

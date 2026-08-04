@@ -24,7 +24,10 @@ import io.github.seyud.weave.utils.asText
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import top.yukonga.miuix.kmp.basic.SnackbarDuration
@@ -44,19 +47,15 @@ class LogViewModel(
     private val _event = Channel<LogEvent>(Channel.BUFFERED)
     val event: Flow<LogEvent> = _event.receiveAsFlow()
 
-    private data class LoadResult(
-        val magiskEntries: List<MagiskLogEntry>,
-        val suItems: List<SuLog>,
-    )
-
     var loadingState by mutableStateOf(true)
         private set
     private var hasLoadedOnce = false
 
-    // --- su log
-    val itemsState = mutableStateListOf<SuLog>()
+    // --- su log：直接从 Room 响应式派生，新增/清空自动刷新（不置 loadingState，避免整屏 spinner 闪烁）
+    val suLogs: StateFlow<List<SuLog>> = repo.observeSuLogs()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), emptyList())
 
-    // --- magisk log
+    // --- magisk log：shell 数据源，仍按需加载
     val magiskLogEntriesState = mutableStateListOf<MagiskLogEntry>()
     var magiskLogRaw = " "
 
@@ -69,22 +68,12 @@ class LogViewModel(
         loadingState = true
 
         try {
-            val result = withContext(Dispatchers.Default) {
-                magiskLogRaw = repo.fetchMagiskLogs()
-                val magiskEntries = MagiskLogParser.parse(magiskLogRaw).asReversed()
-                val suLogs = repo.fetchSuLogs()
-                    .sortedByDescending { it.time }
-                LoadResult(
-                    magiskEntries = magiskEntries,
-                    suItems = suLogs,
-                )
-            }
+            val raw = withContext(Dispatchers.Default) { repo.fetchMagiskLogs() }
+            magiskLogRaw = raw
+            val entries = MagiskLogParser.parse(raw).asReversed()
 
             magiskLogEntriesState.clear()
-            magiskLogEntriesState.addAll(result.magiskEntries)
-
-            itemsState.clear()
-            itemsState.addAll(result.suItems)
+            magiskLogEntriesState.addAll(entries)
             hasLoadedOnce = true
         } catch (e: Throwable) {
             _event.trySend(LogEvent.ShowSnackbar(R.string.failure.asText()))
@@ -145,5 +134,9 @@ class LogViewModel(
         repo.clearLogs()
         _event.trySend(LogEvent.ShowSnackbar(R.string.logs_cleared.asText()))
         startLoading()
+    }
+
+    private companion object {
+        const val STOP_TIMEOUT_MS = 5_000L
     }
 }
