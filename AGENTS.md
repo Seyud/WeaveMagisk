@@ -22,6 +22,14 @@ Flags: `-r` for release, `-v` for verbose, `-c <file>` for custom config (defaul
 
 CI uses `python build.py -v -c .github/ci.prop all` (arm64-v8a only).
 
+### Direct Gradle invocation (gotchas)
+
+`build.py` wraps Gradle with the right environment and flags — always prefer it. If you must invoke `gradlew` directly (e.g. to verify a dependency change without rebuilding native):
+
+- The Gradle project root is **`app/`**, not the repo root. `gradlew`/`gradlew.bat` live in `app/` and must be run with `app/` as the working directory. Running from the repo root fails with: `Directory '<repo>' does not contain a Gradle build.`
+- The main app module was renamed to **`:apk`** (root project name is still `Magisk`, per `app/settings.gradle.kts`). Upstream Magisk's `:app:*` task names do **not** exist here — `:app:assembleRelease` fails with "project 'app' not found". Use `:apk:assembleRelease` / `:apk:assembleDebug`.
+- Verified full combo: `cd app && ./gradlew :apk:assembleRelease :apk:assembleDebug` (both variants; release runs R8).
+
 ## Prerequisites
 
 - `ANDROID_HOME` environment variable pointing to Android SDK
@@ -47,7 +55,7 @@ Generated code: `native/out/generated/flags.h` and `flags.rs` are created during
 ### App (`app/`)
 
 Gradle composite build. Modules:
-- **apk** — Main application (Jetpack Compose + Miuix). Package: `io.github.seyud.weave`
+- **apk** — Main application (Jetpack Compose + Miuix). Package: `io.github.seyud.weave` (renamed from upstream Magisk's `:app`)
 - **core** — Library module with business logic, Room DB, Retrofit, AIDL
 - **shared** — Pure Java/Android library (no Kotlin). Used by core and stub
 - **stub** — Lightweight stub APK for hidden mode. Obfuscated with lsparanoid
