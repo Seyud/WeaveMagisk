@@ -4,7 +4,11 @@ A Magisk fork with Miuix UI (Jetpack Compose). Native (C++/Rust) + Android app (
 
 ## Build Commands
 
-All builds go through `build.py` (Python 3.8+). Never invoke gradlew or cargo directly — `build.py` sets up environment, toolchains, and cross-compilation flags.
+All real builds go through `build.py` (Python 3.8+). `build.py` imports `scripts/env.py` internally and configures the environment, toolchains, and cross-compilation flags itself — no `scripts/env.py` prefix needed.
+
+Standalone tool invocations outside `build.py` must be prefixed with `scripts/env.py` — except app-only `gradlew` (no native rebuild), which may run plain from `app/` (see below):
+- native tools (`cargo`, `rustc`, `ndk-build`): `scripts/env.py cargo ...` — on Windows, the only way ONDK DLLs get onto `PATH`
+- app-only gradlew: `cd app && ./gradlew :apk:assembleDebug` — see "Direct Gradle invocation" below
 
 ```bash
 ./build.py ndk          # Download and install ONDK (required first)
@@ -52,6 +56,8 @@ External dependencies are git submodules in `native/src/external/` — always cl
 
 Generated code: `native/out/generated/flags.h` and `flags.rs` are created during build. Run `./build.py native` before IDE work on native code.
 
+Full native subproject guide: [`native/AGENTS.md`](native/AGENTS.md).
+
 ### App (`app/`)
 
 Gradle composite build. Modules:
@@ -62,6 +68,8 @@ Gradle composite build. Modules:
 - **stub-res** — Extracted stub string resources
 - **test** — UI test APK (UIAutomator). Always built as release
 - **build-logic** — Composite build with custom Gradle plugin (`MagiskPlugin`)
+
+Full app subproject guide: [`app/AGENTS.md`](app/AGENTS.md).
 
 Build conventions defined in `app/build-logic/src/main/java/Setup.kt`:
 - `compileSdk` 37, `minSdk` 24, `targetSdk` 37
@@ -105,6 +113,16 @@ Version config: `app/gradle.properties` (`magisk.versionCode`, `magisk.stubVersi
 - C++: C++23, `-Oz` optimization, `-Wall`
 - No `unwrap()` in Rust — clippy denies it
 - Translation strings go in `app/core/src/main/res/values/strings.xml` and `app/stub-res/src/main/res/values/strings.xml`
+
+## AI/Agent Guidelines
+
+Adapted from upstream Magisk's AGENTS.md (commit cfd195b5):
+
+1. **Git / Commit Control:** Never commit changes or amend an existing git commit without the user's explicit request or approval. When asked to commit, follow the 50/72 rule (subject ≤ 50 chars, blank line before body, wrap body at 72 chars) and include an `Assisted-by: <ModelVersion>` trailer in the body.
+2. **Build Invocation:** Prefer `./build.py <command>` for real builds. Standalone native tools (`cargo`, `rustc`, `ndk-build`) must be prefixed with `scripts/env.py` (see "Build Commands" above). App-only `gradlew` may run plain from `app/` per the "Direct Gradle invocation" note.
+3. **Pre-build Native Code:** Before editing code in `native/`, run `./build.py native` at least once to generate FFI bindings (`flags.h`, `flags.rs`) and headers.
+4. **Subproject Context:** Refer to [`app/AGENTS.md`](app/AGENTS.md) when working inside `app/` and [`native/AGENTS.md`](native/AGENTS.md) when working inside `native/`.
+5. **Verification Loop:** After changes, verify compilation and run lint/clippy for affected modules before concluding.
 
 ## Windows Quirks
 
