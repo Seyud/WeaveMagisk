@@ -100,16 +100,6 @@ fun FlashScreen(
     }
 
     val scope = rememberCoroutineScope()
-    ObserveAsEvents(viewModel.event) { event ->
-        when (event) {
-            is FlashViewModel.FlashEvent.ShowSnackbar -> scope.launch {
-                snackbarHostState.showSnackbarEvent(
-                    message = event.message.getText(context.resources),
-                    duration = event.duration,
-                )
-            }
-        }
-    }
     ObserveAsEvents(viewModel.baseEvent) { event ->
         when (event) {
             is BaseEvent.ShowSnackbar -> scope.launch {

@@ -11,6 +11,7 @@ import androidx.lifecycle.viewModelScope
 import io.github.seyud.weave.arch.BaseViewModel
 import io.github.seyud.weave.core.Const
 import io.github.seyud.weave.core.Info
+import io.github.seyud.weave.core.R as CoreR
 import io.github.seyud.weave.core.ktx.reboot
 import io.github.seyud.weave.core.ktx.synchronized
 import io.github.seyud.weave.core.ktx.timeFormatStandard
@@ -21,31 +22,15 @@ import io.github.seyud.weave.core.tasks.MagiskInstaller
 import io.github.seyud.weave.core.utils.MediaStoreUtils
 import io.github.seyud.weave.core.utils.MediaStoreUtils.displayName
 import io.github.seyud.weave.core.utils.MediaStoreUtils.outputStream
-import io.github.seyud.weave.utils.TextHolder
-import io.github.seyud.weave.utils.asText
 import com.topjohnwu.superuser.CallbackList
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import top.yukonga.miuix.kmp.basic.SnackbarDuration
 
 class FlashViewModel : BaseViewModel() {
-
-    sealed interface FlashEvent {
-        data class ShowSnackbar(
-            val message: TextHolder,
-            val duration: SnackbarDuration = SnackbarDuration.Short,
-        ) : FlashEvent
-    }
-
-    private val _event = Channel<FlashEvent>(Channel.BUFFERED)
-    val event: Flow<FlashEvent> = _event.receiveAsFlow()
 
     companion object {
         private const val MODULE_INSTALL_BANNER = """
@@ -204,25 +189,7 @@ class FlashViewModel : BaseViewModel() {
         _state.value = if (success) State.SUCCESS else State.FAILED
     }
 
-    private fun savePressed() = withExternalRW {
-        viewModelScope.launch(Dispatchers.IO) {
-            val name = "magisk_install_log_%s.log".format(
-                System.currentTimeMillis().toTime(timeFormatStandard)
-            )
-            val file = MediaStoreUtils.getFile(name)
-            file.uri.outputStream().bufferedWriter().use { writer ->
-                synchronized(logItems) {
-                    logItems.forEach {
-                        writer.write(it)
-                        writer.newLine()
-                    }
-                }
-            }
-            _event.trySend(FlashEvent.ShowSnackbar(file.toString().asText()))
-        }
-    }
-
-    fun saveLogForCompose(context: Context) {
+    fun saveLogForCompose(context: Context) = withExternalRW {
         viewModelScope.launch {
             val result = withContext(Dispatchers.IO) {
                 runCatching {
@@ -247,12 +214,10 @@ class FlashViewModel : BaseViewModel() {
                     context.toast(savedPath, Toast.LENGTH_LONG)
                 }
                 .onFailure { error ->
-                    context.toast(error.message ?: "保存日志失败", Toast.LENGTH_LONG)
+                    context.toast(error.message ?: context.getString(CoreR.string.save_log_failed), Toast.LENGTH_LONG)
                 }
         }
     }
-
-    fun saveLog() = savePressed()
 
     fun restartPressed() = reboot()
 }

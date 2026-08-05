@@ -336,6 +336,7 @@
     <string name="done">Done!</string>
     <string name="done_action">Done running action of %1$s</string>
     <string name="failure">Failed!</string>
+    <string name="save_log_failed">Save log failed</string>
     <string name="hide_app_title">Hiding the WeaveMask app…</string>
     <string name="open_link_failed_toast">No app found to open the link</string>
     <string name="complete_uninstall">Complete uninstall</string>
