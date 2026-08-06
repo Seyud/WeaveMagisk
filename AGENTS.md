@@ -33,6 +33,8 @@ CI uses `python build.py -v -c .github/ci.prop all` (arm64-v8a only).
 - The Gradle project root is **`app/`**, not the repo root. `gradlew`/`gradlew.bat` live in `app/` and must be run with `app/` as the working directory. Running from the repo root fails with: `Directory '<repo>' does not contain a Gradle build.`
 - The main app module was renamed to **`:apk`** (root project name is still `Magisk`, per `app/settings.gradle.kts`). Upstream Magisk's `:app:*` task names do **not** exist here — `:app:assembleRelease` fails with "project 'app' not found". Use `:apk:assembleRelease` / `:apk:assembleDebug`.
 - Verified full combo: `cd app && ./gradlew :apk:assembleRelease :apk:assembleDebug` (both variants; release runs R8).
+- Toolchain (after the Gradle 9.6.1 sync): Gradle 9.6.1, AGP 9.3.1, Kotlin 2.4.10, KSP 2.3.10 — declared in `app/gradle/libs.versions.toml` / `app/gradle/wrapper/gradle-wrapper.properties`.
+- Signing falls back to the debug keystore when `config.prop` has no `keyStore`, so `assembleRelease` works out of the box locally.
 
 ## Prerequisites
 
@@ -43,6 +45,15 @@ CI uses `python build.py -v -c .github/ci.prop all` (arm64-v8a only).
 - `sccache` or `ccache` in PATH will be auto-detected and used for build caching
 
 ## Architecture
+
+### It is a fork — expect divergence from upstream Magisk
+
+Remotes:
+- `origin` → github.com/Seyud/WeaveMagisk
+- `upstream` → github.com/topjohnwu/Magisk
+- `magisk` → local `D:/Code/src/Magisk` (a separate upstream checkout for diffing / cherry-picking)
+
+When syncing upstream commits (`git cherry-pick magisk/<sha>`), **expect conflicts in `app/gradle/libs.versions.toml` and `app/gradle/wrapper/gradle-wrapper.properties`** — those files have diverged (see below). A dry-run in a throwaway worktree first is cheap. Port the intent, resolve by hand; most version lines auto-merge, the toolchain block and strategy-diverged lines do not.
 
 ### Native (`native/src/`)
 
@@ -81,12 +92,23 @@ Build conventions defined in `app/build-logic/src/main/java/Setup.kt`:
 
 Version config: `app/gradle.properties` (`magisk.versionCode`, `magisk.stubVersion`) and `config.prop` (overrides). `build.py` generates `app/build/flags.prop` with `version`, `versionCode`, `abiList`.
 
+#### Version catalog divergences from upstream
+
+- UI deps come from a Compose BOM (`composeBom`) + Miuix — not upstream's standalone `lifecycle`/`compose-ui`/`compose-m3` pins.
+- `moshix` plugin is renamed to `moshi`; no `navigation-safeargs` (this fork uses Navigation3).
+- `com.google.android.material:material` is still a **hard dependency**, but not for the Compose UI (that's Miuix). All Activity themes inherit `Theme.MaterialComponents.*` — the AppCompat-required shell that hosts the Compose content — and the WebUI (WebView) screens use Material widgets/styles. `MotionRevealHelper.kt` (FAB/CircularReveal) is dead code, unused.
+
 ### Navigation & UI
 
-- Navigation3 with custom type-safe `Navigator` and spring-physics transitions
+- Navigation3 with custom type-safe `Navigator` and spring-physics transitions (replaces Fragment Navigation + SafeArgs)
 - Miuix component library (not standard Material3)
 - Liquid Glass effects: `CombinedBackdrop`, `InnerShadow`, `Lens`, `Vibrancy`
+- 6 theme modes + Monet key colors
 - Dual home layouts: Classic and Weavsk, switchable in settings
+- Floating bottom bar, page scaling, app icon switcher
+- Whitelist mode: superuser list mode synced with Zygisk Next
+- Module repository browser (KernelSU repo format), batch local install, and a download-and-patch boot-image install method
+- WebUI theme injection: module WebUIs follow the app's Monet scheme via CSS custom properties
 
 ## Config
 
@@ -136,3 +158,5 @@ Adapted from upstream Magisk's AGENTS.md (commit cfd195b5):
 - CI: GitHub Actions on `macos-26` (release builds), `windows-2025` + `ubuntu-24.04` (test builds)
 - License: GPLv3+
 - Upstream: Magisk by topjohnwu
+- First stable: v30.7.5, based on Magisk v30.7
+- Bug reports are only accepted from **Debug** builds (README).
