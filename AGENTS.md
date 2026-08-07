@@ -118,7 +118,7 @@ Version config: `app/gradle.properties` (`magisk.versionCode`, `magisk.stubVersi
 
 ## Testing
 
-- AVD tests: `scripts/avd.sh test <api_version>` — requires pre-built APKs
+- AVD tests: `scripts/avd.sh test -v <api_version> [-t <type>] [<apk>...]` — requires pre-built APKs
 - Cuttlefish tests: `scripts/cuttlefish.sh` — for virtual device testing
 - Test APK: `./build.py test` — builds UIAutomator test APK, always as release
 - CI runs AVD tests on API 30-36 + 36.1 + 37.0 + CANARY (x86_64), API 30 (x86)

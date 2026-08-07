@@ -103,9 +103,7 @@ jobs:
 
       - name: Run AVD test
         timeout-minutes: 15
-        env:
-          AVD_TEST_LOG: 1
-        run: scripts/avd.sh test ${{ matrix.version }} ${{ matrix.type }}
+        run: scripts/avd.sh test -l -v ${{ matrix.version }} -t ${{ matrix.type }} out/app-*.apk
 
       - name: Upload logs on error
         if: ${{ failure() }}
@@ -143,8 +141,7 @@ jobs:
         timeout-minutes: 15
         env:
           FORCE_32_BIT: 1
-          AVD_TEST_LOG: 1
-        run: scripts/avd.sh test ${{ matrix.version }}
+        run: scripts/avd.sh test -l -v ${{ matrix.version }} out/app-*.apk
 
       - name: Upload logs on error
         if: ${{ failure() }}
