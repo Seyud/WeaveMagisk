@@ -83,7 +83,7 @@ parse_args() {
         type="$OPTARG"
         ;;
       l )
-        export AVD_TEST_LOG=1
+        AVD_TEST_LOG=1
         ;;
       \? )
         echo "Error: Invalid option: -$OPTARG" 1>&2
@@ -148,6 +148,9 @@ parse_args() {
   echo emu_args=\"$emu_args\"
   echo OPTIND=$OPTIND
 
+  if [ -n "$AVD_TEST_LOG" ]; then
+    echo export AVD_TEST_LOG=1
+  fi
   # Dump local variables
   dump_vars $return_vals
 }
