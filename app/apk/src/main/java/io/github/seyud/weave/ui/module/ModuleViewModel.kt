@@ -48,6 +48,11 @@ data class ModuleUiState(
     val sortEnabledFirst: Boolean = false,
     val sortUpdateFirst: Boolean = false,
     val sortExecutableFirst: Boolean = false,
+    /**
+     * 管理模式：长按底栏模块页图标切换。
+     * 开启后已禁用模块显示「隐藏」按钮，被隐藏的模块暂时显示并带「再现」按钮
+     */
+    val managementMode: Boolean = false,
     val modules: List<ModuleInfo> = emptyList(),
     val errorMessage: String? = null
 )
@@ -92,6 +97,11 @@ class ModuleViewModel(
     private var allModules: List<ModuleInfo> = emptyList()
     private var moduleSnapshotVersion = 0
 
+    /**
+     * 被隐藏的模块 ID 集合（持久化于偏好设置，仅影响 UI 显示）
+     */
+    private var hiddenModuleIds: Set<String> = emptySet()
+
     private fun currentModuleSnapshot(): Map<String, ModuleInfo> = allModules.associateBy { it.id }
 
     private fun List<ModuleInfo>.retainUpdateStateFrom(
@@ -123,6 +133,7 @@ class ModuleViewModel(
      */
     fun initializePreferences() {
         val options = prefsRepo.loadSortOptions()
+        hiddenModuleIds = prefsRepo.loadHiddenModuleIds()
         _uiState.value = _uiState.value.copy(
             sortEnabledFirst = options.enabledFirst,
             sortUpdateFirst = options.updateFirst,
@@ -162,6 +173,36 @@ class ModuleViewModel(
     }
 
     /**
+     * 切换管理模式（长按底栏模块页图标触发）
+     * 开启后：已禁用模块显示「隐藏」按钮，被隐藏的模块暂时显示并带「再现」按钮；
+     * 关闭后：被隐藏的模块重新藏起来
+     */
+    fun toggleManagementMode() {
+        _uiState.value = _uiState.value.copy(managementMode = !_uiState.value.managementMode)
+        publishFilteredModules(resort = false)
+    }
+
+    /**
+     * 隐藏模块卡片（仅 UI 层，不改变模块启用/安装状态）
+     */
+    fun hideModule(moduleId: String) {
+        if (moduleId in hiddenModuleIds) return
+        hiddenModuleIds = hiddenModuleIds + moduleId
+        prefsRepo.saveHiddenModuleIds(hiddenModuleIds)
+        publishFilteredModules(resort = false)
+    }
+
+    /**
+     * 再现被隐藏的模块卡片，恢复普通显示
+     */
+    fun revealModule(moduleId: String) {
+        if (moduleId !in hiddenModuleIds) return
+        hiddenModuleIds = hiddenModuleIds - moduleId
+        prefsRepo.saveHiddenModuleIds(hiddenModuleIds)
+        publishFilteredModules(resort = false)
+    }
+
+    /**
      * 刷新模块列表
      */
     fun refresh(resort: Boolean = true) {
@@ -188,6 +229,7 @@ class ModuleViewModel(
         }
 
         try {
+            hiddenModuleIds = prefsRepo.loadHiddenModuleIds()
             val moduleLoaded = Info.env.isActive && withContext(Dispatchers.IO) { LocalModule.loaded() }
             val installedModules = if (moduleLoaded) {
                 withContext(Dispatchers.IO) { LocalModule.installed() }
@@ -276,6 +318,12 @@ class ModuleViewModel(
                     it.id.contains(query, ignoreCase = true) ||
                     it.author.contains(query, ignoreCase = true)
             }
+        }
+
+        // 打上隐藏标记；非管理模式下过滤掉被隐藏的模块卡片
+        modules = modules.map { it.copy(hidden = it.id in hiddenModuleIds) }
+        if (!state.managementMode) {
+            modules = modules.filterNot { it.hidden }
         }
 
         modules = if (resort || state.modules.isEmpty()) {

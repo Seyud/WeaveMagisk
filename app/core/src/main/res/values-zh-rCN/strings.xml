@@ -136,6 +136,8 @@
     <string name="module_state_remove">移除</string>
     <string name="module_action">操作</string>
     <string name="module_state_restore">还原</string>
+    <string name="module_state_hide">隐藏</string>
+    <string name="module_state_reveal">再现</string>
     <string name="module_webui">WebUI</string>
     <string name="module_action_install_external">从本地安装</string>
     <string name="module_shortcut_title">创建快捷方式</string>

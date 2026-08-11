@@ -54,6 +54,8 @@ internal fun ModuleSearchResultsHost(
     onAddShortcut: (ModuleInfo) -> Unit,
     onDownloadUpdate: (ModuleInfo) -> Unit,
     onToggleModuleRemove: (ModuleInfo) -> Unit,
+    onHideModule: ((ModuleInfo) -> Unit)? = null,
+    onRevealModule: ((ModuleInfo) -> Unit)? = null,
 ) {
     uiSearchStatus.SearchPager(
         onSearchStatusChange = onSearchStatusChange,
@@ -69,6 +71,8 @@ internal fun ModuleSearchResultsHost(
             onAddShortcut = onAddShortcut,
             onDownloadUpdate = onDownloadUpdate,
             onToggleModuleRemove = onToggleModuleRemove,
+            onHideModule = onHideModule,
+            onRevealModule = onRevealModule,
         )
     }
 }

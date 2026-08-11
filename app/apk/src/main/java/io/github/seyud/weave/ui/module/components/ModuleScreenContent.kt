@@ -51,6 +51,8 @@ internal fun ModuleScreenContent(
     onAddShortcut: (ModuleInfo) -> Unit,
     onDownloadUpdate: (ModuleInfo) -> Unit,
     onToggleModuleRemove: (ModuleInfo) -> Unit,
+    onHideModule: ((ModuleInfo) -> Unit)?,
+    onRevealModule: ((ModuleInfo) -> Unit)?,
 ) {
     val context = LocalContext.current
     val layoutDirection = LocalLayoutDirection.current
@@ -136,6 +138,8 @@ internal fun ModuleScreenContent(
                         onAddShortcut = onAddShortcut,
                         onDownloadUpdate = onDownloadUpdate,
                         onToggleModuleRemove = onToggleModuleRemove,
+                        onHideModule = onHideModule,
+                        onRevealModule = onRevealModule,
                         topContentPadding = innerPadding.calculateTopPadding() + boxHeight.value + 6.dp,
                         contentBottomPadding = contentBottomPadding,
                         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),

@@ -70,6 +70,13 @@ fun ModuleScreen(
         }
     )
 
+    // 管理模式（长按底栏模块页图标切换）：非空回调才会渲染隐藏/再现按钮
+    val managementMode = uiState.managementMode
+    val onHideModule: ((ModuleInfo) -> Unit)? =
+        if (managementMode) { module -> viewModel.hideModule(module.id) } else null
+    val onRevealModule: ((ModuleInfo) -> Unit)? =
+        if (managementMode) { module -> viewModel.revealModule(module.id) } else null
+
     fun onModuleAddShortcut(module: ModuleInfo) {
         shortcutState.bindModule(module)
         when (shortcutState.availableTypes.size) {
@@ -160,6 +167,8 @@ fun ModuleScreen(
                     onAddShortcut = ::onModuleAddShortcut,
                     onDownloadUpdate = { module -> viewModel.downloadPressed(module.updateInfo) },
                     onToggleModuleRemove = { module -> viewModel.toggleModuleRemove(module.id) },
+                    onHideModule = onHideModule,
+                    onRevealModule = onRevealModule,
                 )
             },
             contentWindowInsets = WindowInsets.systemBars
@@ -197,6 +206,8 @@ fun ModuleScreen(
                     onAddShortcut = ::onModuleAddShortcut,
                     onDownloadUpdate = { module -> viewModel.downloadPressed(module.updateInfo) },
                     onToggleModuleRemove = { module -> viewModel.toggleModuleRemove(module.id) },
+                    onHideModule = onHideModule,
+                    onRevealModule = onRevealModule,
                 )
             },
         )

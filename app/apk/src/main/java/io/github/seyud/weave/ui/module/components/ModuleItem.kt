@@ -54,7 +54,9 @@ import top.yukonga.miuix.kmp.basic.Switch
 import top.yukonga.miuix.kmp.basic.Text
 import top.yukonga.miuix.kmp.icon.MiuixIcons
 import top.yukonga.miuix.kmp.icon.extended.Delete
+import top.yukonga.miuix.kmp.icon.extended.Hide
 import top.yukonga.miuix.kmp.icon.extended.Play
+import top.yukonga.miuix.kmp.icon.extended.Show
 import top.yukonga.miuix.kmp.icon.extended.Undo
 import top.yukonga.miuix.kmp.icon.extended.UploadCloud
 import top.yukonga.miuix.kmp.theme.MiuixTheme
@@ -70,19 +72,26 @@ internal fun ModuleItem(
     onAddShortcut: () -> Unit,
     onDownloadUpdate: () -> Unit,
     onToggleRemoved: () -> Unit,
+    onHideModule: (() -> Unit)?,
+    onRevealModule: (() -> Unit)?,
     modifier: Modifier = Modifier,
 ) {
     val context = LocalContext.current
     val density = LocalDensity.current
     val isSwitchEnabled = !module.removed &&
         !module.updated &&
+        !module.hidden &&
         (!module.showNotice || (!Info.isZygiskEnabled && module.isZygisk))
     val hasDescription = module.description.isNotEmpty()
+    // 管理模式下的隐藏/再现按钮（仅当前卡片二选一可能出现）
+    val showHideButton = onHideModule != null && !module.hidden && !module.enabled
+    val showRevealButton = onRevealModule != null && module.hidden
     val visibleActionButtonCount = listOf(
         module.showAction && module.enabled && !module.removed,
         module.showWebUi,
         module.showShortcutButton,
         module.showUpdate,
+        showHideButton || showRevealButton,
     ).count { it }
     val compactActionButtons = visibleActionButtonCount >= 3
     var expanded by rememberSaveable(module.id) { mutableStateOf(false) }
@@ -250,6 +259,70 @@ internal fun ModuleItem(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
+                    if (showRevealButton) {
+                        // 管理模式：被隐藏的模块卡片暂时显示，左下角仅提供「再现」按钮
+                        val revealBg = MiuixTheme.colorScheme.primaryContainer.copy(alpha = 0.7f)
+                        val revealTint = MiuixTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.9f)
+                        val revealButtonText = context.getString(CoreR.string.module_state_reveal)
+                        IconButton(
+                            minHeight = 32.dp,
+                            minWidth = 32.dp,
+                            onClick = onRevealModule,
+                            backgroundColor = revealBg,
+                        ) {
+                            Row(
+                                modifier = Modifier.padding(horizontal = 8.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                            ) {
+                                Icon(
+                                    modifier = Modifier.size(18.dp),
+                                    imageVector = MiuixIcons.Show,
+                                    tint = revealTint,
+                                    contentDescription = revealButtonText,
+                                )
+                                Text(
+                                    text = revealButtonText,
+                                    color = revealTint,
+                                    fontWeight = FontWeight.Medium,
+                                    fontSize = 14.sp,
+                                )
+                            }
+                        }
+                    }
+
+                    if (showHideButton) {
+                        // 管理模式：已禁用模块卡片左下角的「隐藏」按钮
+                        val hideBg = MiuixTheme.colorScheme.secondaryContainer.copy(alpha = 0.8f)
+                        val hideTint = MiuixTheme.colorScheme.onSurface.copy(alpha = 0.9f)
+                        val hideButtonText = context.getString(CoreR.string.module_state_hide)
+                        IconButton(
+                            minHeight = 32.dp,
+                            minWidth = 32.dp,
+                            onClick = onHideModule,
+                            backgroundColor = hideBg,
+                        ) {
+                            Row(
+                                modifier = Modifier.padding(horizontal = 8.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                            ) {
+                                Icon(
+                                    modifier = Modifier.size(18.dp),
+                                    imageVector = MiuixIcons.Hide,
+                                    tint = hideTint,
+                                    contentDescription = hideButtonText,
+                                )
+                                Text(
+                                    text = hideButtonText,
+                                    color = hideTint,
+                                    fontWeight = FontWeight.Medium,
+                                    fontSize = 14.sp,
+                                )
+                            }
+                        }
+                    }
+
                     if (module.showAction && module.enabled && !module.removed) {
                         val secondaryContainer = MiuixTheme.colorScheme.secondaryContainer.copy(alpha = 0.8f)
                         val actionIconTint = MiuixTheme.colorScheme.onSurface.copy(alpha = 0.9f)
@@ -370,7 +443,7 @@ internal fun ModuleItem(
 
                     Spacer(modifier = Modifier.weight(1f))
 
-                    if (module.showUpdate) {
+                    if (module.showUpdate && !module.hidden) {
                         val updateBg = MiuixTheme.colorScheme.tertiaryContainer.copy(alpha = 0.6f)
                         val updateTint = MiuixTheme.colorScheme.onTertiaryContainer.copy(alpha = 0.8f)
                         IconButton(
@@ -410,45 +483,47 @@ internal fun ModuleItem(
                         }
                     }
 
-                    val secondaryContainer = MiuixTheme.colorScheme.secondaryContainer.copy(alpha = 0.8f)
-                    val actionIconTint = MiuixTheme.colorScheme.onSurface.copy(alpha = 0.9f)
-                    val removeButtonText = if (module.removed) {
-                        context.getString(CoreR.string.module_state_restore)
-                    } else {
-                        context.getString(CoreR.string.module_state_remove)
-                    }
-                    IconButton(
-                        minHeight = 32.dp,
-                        minWidth = 32.dp,
-                        onClick = onToggleRemoved,
-                        enabled = !module.updated,
-                        backgroundColor = if (module.removed) {
-                            secondaryContainer.copy(alpha = 0.8f)
+                    if (!module.hidden) {
+                        val secondaryContainer = MiuixTheme.colorScheme.secondaryContainer.copy(alpha = 0.8f)
+                        val actionIconTint = MiuixTheme.colorScheme.onSurface.copy(alpha = 0.9f)
+                        val removeButtonText = if (module.removed) {
+                            context.getString(CoreR.string.module_state_restore)
                         } else {
-                            secondaryContainer
-                        },
-                    ) {
-                        Row(
-                            modifier = Modifier.padding(horizontal = 8.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(4.dp),
+                            context.getString(CoreR.string.module_state_remove)
+                        }
+                        IconButton(
+                            minHeight = 32.dp,
+                            minWidth = 32.dp,
+                            onClick = onToggleRemoved,
+                            enabled = !module.updated,
+                            backgroundColor = if (module.removed) {
+                                secondaryContainer.copy(alpha = 0.8f)
+                            } else {
+                                secondaryContainer
+                            },
                         ) {
-                            Icon(
-                                modifier = Modifier.size(18.dp),
-                                imageVector = if (module.removed) {
-                                    MiuixIcons.Undo
-                                } else {
-                                    MiuixIcons.Delete
-                                },
-                                tint = actionIconTint,
-                                contentDescription = removeButtonText,
-                            )
-                            Text(
-                                text = removeButtonText,
-                                color = actionIconTint,
-                                fontWeight = FontWeight.Medium,
-                                fontSize = 14.sp,
-                            )
+                            Row(
+                                modifier = Modifier.padding(horizontal = 8.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                            ) {
+                                Icon(
+                                    modifier = Modifier.size(18.dp),
+                                    imageVector = if (module.removed) {
+                                        MiuixIcons.Undo
+                                    } else {
+                                        MiuixIcons.Delete
+                                    },
+                                    tint = actionIconTint,
+                                    contentDescription = removeButtonText,
+                                )
+                                Text(
+                                    text = removeButtonText,
+                                    color = actionIconTint,
+                                    fontWeight = FontWeight.Medium,
+                                    fontSize = 14.sp,
+                                )
+                            }
                         }
                     }
                 }

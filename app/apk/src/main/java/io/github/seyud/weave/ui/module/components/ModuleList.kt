@@ -41,6 +41,8 @@ internal fun ModuleList(
     onAddShortcut: (ModuleInfo) -> Unit,
     onDownloadUpdate: (ModuleInfo) -> Unit,
     onToggleModuleRemove: (ModuleInfo) -> Unit,
+    onHideModule: ((ModuleInfo) -> Unit)?,
+    onRevealModule: ((ModuleInfo) -> Unit)?,
     topContentPadding: Dp,
     contentBottomPadding: Dp,
     modifier: Modifier = Modifier,
@@ -71,6 +73,8 @@ internal fun ModuleList(
                 onAddShortcut = onAddShortcut,
                 onDownloadUpdate = onDownloadUpdate,
                 onToggleModuleRemove = onToggleModuleRemove,
+                onHideModule = onHideModule,
+                onRevealModule = onRevealModule,
             )
         }
 
@@ -92,6 +96,8 @@ internal fun LazyListScope.moduleItems(
     onAddShortcut: (ModuleInfo) -> Unit,
     onDownloadUpdate: (ModuleInfo) -> Unit,
     onToggleModuleRemove: (ModuleInfo) -> Unit,
+    onHideModule: ((ModuleInfo) -> Unit)? = null,
+    onRevealModule: ((ModuleInfo) -> Unit)? = null,
 ) {
     items(
         items = modules,
@@ -106,6 +112,8 @@ internal fun LazyListScope.moduleItems(
             onAddShortcut = { onAddShortcut(module) },
             onDownloadUpdate = { onDownloadUpdate(module) },
             onToggleRemoved = { onToggleModuleRemove(module) },
+            onHideModule = onHideModule?.let { callback -> { callback(module) } },
+            onRevealModule = onRevealModule?.let { callback -> { callback(module) } },
             modifier = Modifier.animateItem(
                 fadeInSpec = null,
                 fadeOutSpec = null,

@@ -140,6 +140,8 @@
     <string name="module_state_remove">Remove</string>
     <string name="module_action">Action</string>
     <string name="module_state_restore">Restore</string>
+    <string name="module_state_hide">Hide</string>
+    <string name="module_state_reveal">Show</string>
     <string name="module_webui">WebUI</string>
     <string name="module_unavailable">Module %1$s is unavailable</string>
     <string name="module_action_install_external">Install from storage</string>

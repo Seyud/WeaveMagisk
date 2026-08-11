@@ -33,6 +33,10 @@ data class ModuleInfo(
     val webUiIconPath: String?,
     val outdated: Boolean,
     val banner: String = "",
+    /**
+     * 是否被用户在管理模式下隐藏（仅 UI 层过滤，不影响模块本身状态）
+     */
+    val hidden: Boolean = false,
 ) {
     /**
      * 是否显示警告信息

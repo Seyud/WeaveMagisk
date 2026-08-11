@@ -9,6 +9,8 @@ import androidx.compose.animation.core.Easing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.animateScrollBy
+import androidx.compose.foundation.gestures.awaitEachGesture
+import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.asPaddingValues
@@ -45,7 +47,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.input.pointer.PointerEventPass
+import androidx.compose.ui.input.pointer.PointerEventTimeoutCancellationException
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.sp
@@ -81,10 +88,12 @@ import io.github.seyud.weave.ui.util.defaultBarBlur
 import io.github.seyud.weave.ui.util.rememberBarBlurBackdrop
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.job
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeout
 import kotlin.math.abs
 import kotlin.math.PI
 import kotlin.math.cos
@@ -206,6 +215,65 @@ fun rememberMainPagerState(pagerState: PagerState): MainPagerState {
     val coroutineScope = rememberCoroutineScope()
     return remember(pagerState, coroutineScope) {
         MainPagerState(pagerState, coroutineScope)
+    }
+}
+
+/**
+ * 在底栏（bar）层级附加「长按指定 tab」检测。
+ *
+ * 不能挂在底栏的单个 item 上：
+ *  - 标准 NavigationBar：Miuix NavigationBarItem 内部 selectable 会使 item 级外部
+ *    pointerInput 协程在手势中途被静默取消（DOWN 可达、后续全丢）；
+ *  - 悬浮底栏：选中指示器自带拖拽手势层且覆盖在选中的 tab 上，item 的
+ *    combinedClickable 长按无法赢得手势仲裁。
+ * bar 层级没有竞争手势；长按成立后 consume 后续事件，避免松手时误触 item 的 click。
+ *
+ * @param tabsCount   底栏均分的 tab 数
+ * @param targetTab   响应长按的 tab 下标
+ * @param onLongPress 长按成立时的回调
+ */
+private fun Modifier.detectTabLongPress(
+    tabsCount: Int,
+    targetTab: Int,
+    onLongPress: () -> Unit,
+): Modifier = this.pointerInput(Unit) {
+    val longPressTimeout = viewConfiguration.longPressTimeoutMillis
+    val touchSlop = viewConfiguration.touchSlop
+    awaitEachGesture {
+        val down = awaitFirstDown(requireUnconsumed = false)
+        val tabWidth = size.width / tabsCount.toFloat()
+        val inTargetTab = down.position.x >= tabWidth * targetTab &&
+            down.position.x < tabWidth * (targetTab + 1)
+        if (!inTargetTab) return@awaitEachGesture
+        var fired = false
+        try {
+            withTimeout(longPressTimeout) {
+                var pointer = down
+                while (pointer.pressed) {
+                    val event = awaitPointerEvent(PointerEventPass.Initial)
+                    pointer = event.changes.firstOrNull() ?: break
+                    if ((pointer.position - down.position).getDistance() > touchSlop) {
+                        break
+                    }
+                }
+            }
+        } catch (_: TimeoutCancellationException) {
+            fired = true
+        } catch (_: PointerEventTimeoutCancellationException) {
+            // awaitPointerEvent 会把 withTimeout 的超时包装成 Compose 自己的
+            // PointerEventTimeoutCancellationException（CancellationException
+            // 子类），只 catch kotlinx 的 TimeoutCancellationException 会漏掉
+            fired = true
+        }
+        if (fired) {
+            onLongPress()
+            // 吞掉后续事件并 consume，阻止 item 的 click 在抬起时触发
+            do {
+                val event = awaitPointerEvent(PointerEventPass.Initial)
+                event.changes.forEach { it.consume() }
+                if (event.changes.none { it.pressed }) break
+            } while (true)
+        }
     }
 }
 
@@ -565,6 +633,19 @@ private fun MainTabScreen(
         Info.env.isActive && LocalModule.loaded()
     }
 
+    // 长按底栏模块页图标切换管理模式（仅当前处于模块页时生效）
+    // 返回是否处理了长按；两种底栏变体都用 detectTabLongPress（bar 级检测），
+    // 震动需在此自行触发
+    val hapticFeedback = LocalHapticFeedback.current
+    val onModuleTabLongPress: () -> Boolean = {
+        if (mainPagerState.selectedPage == BottomBarDestination.Module.ordinal) {
+            moduleViewModel.toggleManagementMode()
+            true
+        } else {
+            false
+        }
+    }
+
     // 使用 rememberContentReady 延迟加载 Pager 内容
     val contentReady = rememberContentReady()
 
@@ -582,6 +663,18 @@ private fun MainTabScreen(
                                 indication = null,
                                 onClick = {},
                             )
+                            // 长按检测挂在悬浮底栏整体层级：item 的 combinedClickable 长按
+                            // 会被选中指示器的拖拽手势层挡住（指示器覆盖在选中的 tab 上）
+                            .detectTabLongPress(
+                                tabsCount = destinations.size,
+                                targetTab = BottomBarDestination.Module.ordinal,
+                            ) {
+                                if (onModuleTabLongPress()) {
+                                    hapticFeedback.performHapticFeedback(
+                                        HapticFeedbackType.LongPress
+                                    )
+                                }
+                            }
                             .padding(
                                 bottom = 12.dp + WindowInsets.navigationBars
                                     .asPaddingValues().calculateBottomPadding()
@@ -633,7 +726,18 @@ private fun MainTabScreen(
                 }
             } else {
                 NavigationBar(
-                    modifier = Modifier.defaultBarBlur(blurBackdrop, surfaceColor),
+                    // 长按检测挂在 NavigationBar 层级而非 item 级：经 NavigationBarItem 的 modifier
+                    // 附加 pointerInput 时，协程会在手势中途被静默取消（DOWN 可达、后续全丢）。
+                    // detectTabLongPress 按 bar 宽度均分 4 格、以 DOWN 的 x 坐标判定模块页区域。
+                    modifier = Modifier.defaultBarBlur(blurBackdrop, surfaceColor)
+                        .detectTabLongPress(
+                            tabsCount = destinations.size,
+                            targetTab = BottomBarDestination.Module.ordinal,
+                        ) {
+                            if (onModuleTabLongPress()) {
+                                hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
+                            }
+                        },
                     color = barBlurContainerColor(blurBackdrop, surfaceColor),
                     content = {
                         destinations.forEachIndexed { index, destination ->
