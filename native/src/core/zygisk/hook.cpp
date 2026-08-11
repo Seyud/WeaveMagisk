@@ -4,6 +4,7 @@
 #include <dlfcn.h>
 #include <unwind.h>
 #include <span>
+#include <string_view>
 
 #include <lsplt.hpp>
 
@@ -97,6 +98,12 @@ constexpr const char *kForkServer = "nativeForkSystemServer";
 using JNIMethods = std::span<JNINativeMethod>;
 using JNIMethodsDyn = std::pair<unique_ptr<JNINativeMethod[]>, size_t>;
 
+struct NativeBridgeTrace {
+    using method_sig = const bool (*)(const char *, const NativeBridgeRuntimeCallbacks *);
+    method_sig load_native_bridge = nullptr;
+    const NativeBridgeRuntimeCallbacks *callbacks = nullptr;
+};
+
 struct HookContext : JniHookDefinitions {
 
     vector<tuple<dev_t, ino_t, const char *, void **>> plt_backup;
@@ -111,6 +118,7 @@ struct HookContext : JniHookDefinitions {
     void restore_zygote_hook(JNIEnv *env);
     void hook_jni_methods(JNIEnv *env, const char *clz, JNIMethods methods) const;
     void post_native_bridge_load(void *handle);
+    bool trace_native_bridge(NativeBridgeTrace &out);
 
 private:
     void register_hook(dev_t dev, ino_t inode, const char *symbol, void *new_func, void **old_func);
@@ -210,6 +218,13 @@ DCL_HOOK_FUNC(static int, pthread_attr_destroy, void *target) {
             ZLOGV("dlclosing self\n");
             void *self_handle = g_hook->self_handle;
             delete g_hook;
+            g_hook = nullptr;
+
+            // Nothing to unload (e.g. the zygote keeps the bridge alive): return normally
+            // instead of calling dlclose(nullptr), which would only emit an "invalid handle"
+            // error and log noise.
+            if (self_handle == nullptr)
+                return res;
 
             // Because both `pthread_attr_destroy` and `dlclose` have the same function signature,
             // we can use `musttail` to let the compiler reuse our stack frame and thus
@@ -219,6 +234,7 @@ DCL_HOOK_FUNC(static int, pthread_attr_destroy, void *target) {
     }
 
     delete g_hook;
+    g_hook = nullptr;
     return res;
 }
 
@@ -343,15 +359,7 @@ static const NativeBridgeRuntimeCallbacks* find_runtime_callbacks(struct _Unwind
     return nullptr;
 }
 
-void HookContext::post_native_bridge_load(void *handle) {
-    self_handle = handle;
-    using method_sig = const bool (*)(const char *, const NativeBridgeRuntimeCallbacks *);
-    struct trace_arg {
-        method_sig load_native_bridge;
-        const NativeBridgeRuntimeCallbacks *callbacks;
-    };
-    trace_arg arg{};
-
+bool HookContext::trace_native_bridge(NativeBridgeTrace &out) {
     // Unwind to find the address of android::LoadNativeBridge and NativeBridgeRuntimeCallbacks
     _Unwind_Backtrace(+[](_Unwind_Context *ctx, void *arg) -> _Unwind_Reason_Code {
         void *fp = unwind_get_region_start(ctx);
@@ -359,25 +367,36 @@ void HookContext::post_native_bridge_load(void *handle) {
         dladdr(fp, &info);
         ZLOGV("backtrace: %p %s\n", fp, info.dli_fname ?: "???");
         if (info.dli_fname && std::string_view(info.dli_fname).ends_with("/libnativebridge.so")) {
-            auto payload = reinterpret_cast<trace_arg *>(arg);
-            payload->load_native_bridge = reinterpret_cast<method_sig>(fp);
+            auto payload = reinterpret_cast<NativeBridgeTrace *>(arg);
+            payload->load_native_bridge = reinterpret_cast<NativeBridgeTrace::method_sig>(fp);
             payload->callbacks = find_runtime_callbacks(ctx);
             ZLOGV("NativeBridgeRuntimeCallbacks: %p\n", payload->callbacks);
             return _URC_END_OF_STACK;
         }
         return _URC_NO_REASON;
-    }, &arg);
+    }, &out);
+    return out.load_native_bridge != nullptr && out.callbacks != nullptr;
+}
 
-    if (!arg.load_native_bridge || !arg.callbacks)
+void HookContext::post_native_bridge_load(void *handle) {
+    self_handle = handle;
+
+    NativeBridgeTrace arg{};
+    if (!trace_native_bridge(arg))
         return;
 
     // Reload the real native bridge if necessary
     auto nb = get_prop(NBPROP);
     auto len = sizeof(ZYGISKLDR) - 1;
-    if (nb.size() > len) {
+    if (nb.size() > len && std::string_view(nb.c_str(), nb.size()).starts_with(ZYGISKLDR)) {
         arg.load_native_bridge(nb.c_str() + len, arg.callbacks);
     }
-    runtime_callbacks = arg.callbacks;
+    // Only adopt the callbacks if we don't already have them. When this function is reached
+    // from UnloadNativeBridge's dlclose in a forked child (success path), the unwound frame is
+    // not LoadNativeBridge and must not clobber the callbacks captured in the zygote.
+    if (runtime_callbacks == nullptr) {
+        runtime_callbacks = arg.callbacks;
+    }
 }
 
 // -----------------------------------------------------------------
@@ -620,6 +639,30 @@ void HookContext::restore_zygote_hook(JNIEnv *env) {
 void hook_entry() {
     default_new(g_hook);
     g_hook->hook_plt();
+}
+
+// Complete the bootstrap for the "success" native bridge load path.
+// When NativeBridgeItf.isCompatibleWith returns true, libnativebridge keeps our handle and
+// records the bridge as loaded (state = kOpened) without setting its internal error flag, so
+// android::NativeBridgeError() stays false in every forked process. In this path libnativebridge
+// never dlcloses us, hence the NativeBridgeRuntimeCallbacks must be captured here while
+// android::LoadNativeBridge is still on the stack. self_handle is left null: if ART unloads the
+// bridge in a forked child, the dlclose PLT hook adopts the authoritative handle; otherwise the
+// unloader's dlclose(null) is a harmless no-op.
+bool hook_load_success() {
+    if (g_hook == nullptr) {
+        ZLOGE("hook_load_success: no hook context\n");
+        return false;
+    }
+
+    NativeBridgeTrace arg{};
+    if (!g_hook->trace_native_bridge(arg)) {
+        ZLOGE("hook_load_success: failed to locate native bridge runtime callbacks\n");
+        return false;
+    }
+    g_hook->runtime_callbacks = arg.callbacks;
+    ZLOGD("native bridge load success (callbacks=%p)\n", g_hook->runtime_callbacks);
+    return true;
 }
 
 void hookJniNativeMethods(JNIEnv *env, const char *clz, JNINativeMethod *methods, int numMethods) {

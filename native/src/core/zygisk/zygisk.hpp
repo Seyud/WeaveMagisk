@@ -23,6 +23,7 @@
 #define ZLOGV(...) (void*)0
 
 void hook_entry();
+bool hook_load_success();
 void hookJniNativeMethods(JNIEnv *env, const char *clz, JNINativeMethod *methods, int numMethods);
 
 // The reference of the following structs

@@ -2,6 +2,7 @@
 #include <android/dlext.h>
 #include <dlfcn.h>
 #include <poll.h>
+#include <string_view>
 
 #include <base.hpp>
 #include <core.hpp>
@@ -91,6 +92,26 @@ extern "C" [[maybe_unused]] NativeBridgeCallbacks NativeBridgeItf {
         zygisk_logging();
         hook_entry();
         ZLOGD("load success\n");
-        return false;
+
+        // When a real native bridge is appended after our loader (e.g.
+        // "libzygisk.solibhoudini.so"), keep the legacy behavior: return false so that
+        // libnativebridge dlcloses us and our dlclose PLT hook chains into the real bridge.
+        auto nb = get_prop(NBPROP);
+        auto len = sizeof(ZYGISKLDR) - 1;
+        // Only treat a longer property as "real bridge appended after our loader" when it
+        // actually starts with our loader name; otherwise the reload path below would skip a
+        // non-existent prefix and try to load a garbage path.
+        if (nb.size() > len && std::string_view(nb.c_str(), nb.size()).starts_with(ZYGISKLDR))
+            return false;
+
+        // Otherwise report a successful load. libnativebridge then keeps the bridge in the
+        // kOpened state without raising its internal error flag, so android::NativeBridgeError()
+        // returns false in every process forked from zygote. This defeats detection heuristics
+        // that probe NativeBridgeError to tell that Zygisk was injected through the native bridge.
+        if (!hook_load_success()) {
+            ZLOGE("native bridge success setup failed, falling back\n");
+            return false;
+        }
+        return true;
     },
 };
