@@ -47,6 +47,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -104,7 +105,7 @@ fun LogScreen(
     var selectedTab by rememberSaveable { mutableIntStateOf(0) }
     val tabTitles = listOf(
         "WeaveMask",
-        context.getString(CoreR.string.superuser),
+        stringResource(CoreR.string.superuser),
     )
 
     val loading = viewModel.loadingState
@@ -152,7 +153,7 @@ fun LogScreen(
         topBar = {
             TopAppBar(
                 modifier = Modifier.defaultBarBlur(blurBackdrop, surfaceColor),
-                title = context.getString(CoreR.string.logs),
+                title = stringResource(CoreR.string.logs),
                 titleColor = MiuixTheme.colorScheme.onBackground,
                 largeTitleColor = MiuixTheme.colorScheme.onBackground,
                 color = barBlurContainerColor(blurBackdrop, surfaceColor),
@@ -172,7 +173,7 @@ fun LogScreen(
                         IconButton(onClick = { viewModel.saveMagiskLog() }) {
                             Icon(
                                 imageVector = Icons.Rounded.Save,
-                                contentDescription = context.getString(CoreR.string.menuSaveLog),
+                                contentDescription = stringResource(CoreR.string.menuSaveLog),
                                 tint = MiuixTheme.colorScheme.onBackground,
                             )
                         }
@@ -185,7 +186,7 @@ fun LogScreen(
                     ) {
                         Icon(
                             imageVector = MiuixIcons.Delete,
-                            contentDescription = context.getString(CoreR.string.menuClearLog),
+                            contentDescription = stringResource(CoreR.string.menuClearLog),
                             tint = MiuixTheme.colorScheme.onBackground,
                         )
                     }
@@ -291,10 +292,8 @@ private fun SuLogTab(
     startPadding: androidx.compose.ui.unit.Dp,
     endPadding: androidx.compose.ui.unit.Dp,
 ) {
-    val context = LocalContext.current
-
     if (suLogs.isEmpty()) {
-        EmptyContent(context.getString(CoreR.string.log_data_none))
+        EmptyContent(stringResource(CoreR.string.log_data_none))
         return
     }
 
@@ -432,10 +431,8 @@ private fun MagiskLogTab(
     startPadding: androidx.compose.ui.unit.Dp,
     endPadding: androidx.compose.ui.unit.Dp,
 ) {
-    val context = LocalContext.current
-
     if (entries.isEmpty()) {
-        EmptyContent(context.getString(CoreR.string.log_data_magisk_none))
+        EmptyContent(stringResource(CoreR.string.log_data_magisk_none))
         return
     }
 

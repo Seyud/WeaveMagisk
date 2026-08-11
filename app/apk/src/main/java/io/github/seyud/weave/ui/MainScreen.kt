@@ -1,5 +1,6 @@
 package io.github.seyud.weave.ui
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.net.Uri
 import androidx.activity.compose.BackHandler
@@ -468,9 +469,12 @@ fun MainScreen(
                             AboutScreen(
                                 onNavigateBack = { navigator.pop() },
                                 onLinkPressed = { link ->
-                                    context.startActivity(
-                                        Intent(Intent.ACTION_VIEW, link.toUri())
-                                    )
+                                    // 误报抑制：SuRequestActivity 的 VIEW filter 无 <data>，
+                                    // 不可能匹配 http(s) 链接；BROWSABLE 限定只由浏览器解析
+                                    @SuppressLint("UnsafeImplicitIntentLaunch")
+                                    val intent = Intent(Intent.ACTION_VIEW, link.toUri())
+                                    intent.addCategory(Intent.CATEGORY_BROWSABLE)
+                                    context.startActivity(intent)
                                 }
                             )
                         }

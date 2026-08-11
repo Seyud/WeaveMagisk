@@ -1,5 +1,6 @@
 package io.github.seyud.weave.ui.home
 
+import android.annotation.SuppressLint
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
@@ -171,8 +172,13 @@ class HomeViewModel(
     }
 
     fun onLinkPressed(link: String) = object : UiEvent(), ContextExecutor {
+        // UnsafeImplicitIntentLaunch 为误报：该检查只按 action 匹配，而 SuRequestActivity 的
+        // VIEW filter 未声明 <data>，按 Android 解析规则不可能匹配带 http(s) URI 的 intent；
+        // CATEGORY_BROWSABLE 已进一步把解析限定在浏览器
+        @SuppressLint("UnsafeImplicitIntentLaunch")
         override fun invoke(context: Context) {
             val intent = Intent(Intent.ACTION_VIEW, link.toUri())
+            intent.addCategory(Intent.CATEGORY_BROWSABLE)
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             try {
                 context.startActivity(intent)

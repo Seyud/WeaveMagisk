@@ -9,6 +9,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.core.content.getSystemService
 import io.github.seyud.weave.core.R as CoreR
 import io.github.seyud.weave.core.ktx.reboot
@@ -45,7 +46,7 @@ fun RebootListPopup(
     ) {
         Icon(
             imageVector = MiuixIcons.Close2,
-            contentDescription = context.getString(CoreR.string.reboot),
+            contentDescription = stringResource(CoreR.string.reboot),
             tint = colorScheme.onBackground
         )
     }
@@ -105,9 +106,8 @@ private fun RebootDropdownItem(
     optionSize: Int,
     index: Int,
 ) {
-    val context = LocalContext.current
     DropdownImpl(
-        text = context.getString(id),
+        text = stringResource(id),
         optionSize = optionSize,
         isSelected = false,
         onSelectedIndexChange = {

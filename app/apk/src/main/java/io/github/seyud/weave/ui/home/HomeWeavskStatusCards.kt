@@ -17,7 +17,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -160,7 +160,6 @@ internal fun WeavskStatusCard(
     packageName: String,
     progress: Int,
 ) {
-    val context = LocalContext.current
     val systemVersion = "${Build.VERSION.RELEASE} (API ${Build.VERSION.SDK_INT}.0)"
 
     Card(
@@ -181,8 +180,8 @@ internal fun WeavskStatusCard(
         ) {
             Column(modifier = Modifier.fillMaxWidth()) {
                 WeavskStatusItem(
-                    title = context.getString(CoreR.string.home_zygisk_implementation),
-                    content = context.getString(
+                    title = stringResource(CoreR.string.home_zygisk_implementation),
+                    content = stringResource(
                         if (io.github.seyud.weave.core.Info.isZygiskEnabled) {
                             CoreR.string.home_status_enabled
                         } else {
@@ -192,8 +191,8 @@ internal fun WeavskStatusCard(
                     bottomPadding = 24.dp
                 )
                 WeavskStatusItem(
-                    title = context.getString(CoreR.string.home_ramdisk_feature),
-                    content = context.getString(
+                    title = stringResource(CoreR.string.home_ramdisk_feature),
+                    content = stringResource(
                         if (io.github.seyud.weave.core.Info.ramdisk) {
                             CoreR.string.home_status_supported
                         } else {
@@ -203,17 +202,17 @@ internal fun WeavskStatusCard(
                     bottomPadding = 24.dp
                 )
                 WeavskStatusItem(
-                    title = context.getString(CoreR.string.home_manager_version),
+                    title = stringResource(CoreR.string.home_manager_version),
                     content = installedVersion,
                     bottomPadding = 24.dp
                 )
                 WeavskStatusItem(
-                    title = context.getString(CoreR.string.home_manager_package),
+                    title = stringResource(CoreR.string.home_manager_package),
                     content = packageName,
                     bottomPadding = 24.dp
                 )
                 WeavskStatusItem(
-                    title = context.getString(CoreR.string.home_system_version),
+                    title = stringResource(CoreR.string.home_system_version),
                     content = systemVersion,
                     bottomPadding = 0.dp
                 )

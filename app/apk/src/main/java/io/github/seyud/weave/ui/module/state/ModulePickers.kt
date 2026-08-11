@@ -12,6 +12,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.core.net.toUri
 import io.github.seyud.weave.core.R as CoreR
 import io.github.seyud.weave.ui.module.ModuleInstallTarget
@@ -31,6 +32,7 @@ internal fun rememberLocalModulePicker(
     onModulePicked: (List<ModuleInstallTarget>) -> Unit,
 ): () -> Unit {
     val context = LocalContext.current
+    val failureText = stringResource(CoreR.string.failure)
     val scope = rememberCoroutineScope()
     val currentOnModulePicked by rememberUpdatedState(onModulePicked)
     val launcher = rememberLauncherForActivityResult(
@@ -53,7 +55,7 @@ internal fun rememberLocalModulePicker(
                 .onFailure { error ->
                     Toast.makeText(
                         context,
-                        error.message ?: context.getString(CoreR.string.failure),
+                        error.message ?: failureText,
                         Toast.LENGTH_LONG,
                     ).show()
                 }

@@ -31,6 +31,7 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import io.github.seyud.weave.core.Config
@@ -145,7 +146,7 @@ fun HomeScreen(
             TopAppBar(
                 modifier = Modifier.defaultBarBlur(blurBackdrop, surfaceColor),
                 color = barBlurContainerColor(blurBackdrop, surfaceColor),
-                title = context.getString(CoreR.string.section_home),
+                title = stringResource(CoreR.string.section_home),
                 scrollBehavior = scrollBehavior,
                 actions = {
                     RebootListPopup(

@@ -37,6 +37,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
@@ -263,7 +264,7 @@ internal fun ModuleItem(
                         // 管理模式：被隐藏的模块卡片暂时显示，左下角仅提供「再现」按钮
                         val revealBg = MiuixTheme.colorScheme.primaryContainer.copy(alpha = 0.7f)
                         val revealTint = MiuixTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.9f)
-                        val revealButtonText = context.getString(CoreR.string.module_state_reveal)
+                        val revealButtonText = stringResource(CoreR.string.module_state_reveal)
                         IconButton(
                             minHeight = 32.dp,
                             minWidth = 32.dp,
@@ -295,7 +296,7 @@ internal fun ModuleItem(
                         // 管理模式：已禁用模块卡片左下角的「隐藏」按钮
                         val hideBg = MiuixTheme.colorScheme.secondaryContainer.copy(alpha = 0.8f)
                         val hideTint = MiuixTheme.colorScheme.onSurface.copy(alpha = 0.9f)
-                        val hideButtonText = context.getString(CoreR.string.module_state_hide)
+                        val hideButtonText = stringResource(CoreR.string.module_state_hide)
                         IconButton(
                             minHeight = 32.dp,
                             minWidth = 32.dp,
@@ -338,7 +339,7 @@ internal fun ModuleItem(
                                     modifier = Modifier.size(18.dp),
                                     imageVector = MiuixIcons.Play,
                                     tint = actionIconTint,
-                                    contentDescription = context.getString(CoreR.string.module_action),
+                                    contentDescription = stringResource(CoreR.string.module_action),
                                 )
                             } else {
                                 Row(
@@ -350,10 +351,10 @@ internal fun ModuleItem(
                                         modifier = Modifier.size(18.dp),
                                         imageVector = MiuixIcons.Play,
                                         tint = actionIconTint,
-                                        contentDescription = context.getString(CoreR.string.module_action),
+                                        contentDescription = stringResource(CoreR.string.module_action),
                                     )
                                     Text(
-                                        text = context.getString(CoreR.string.module_action),
+                                        text = stringResource(CoreR.string.module_action),
                                         color = actionIconTint,
                                         fontWeight = FontWeight.Medium,
                                         fontSize = 14.sp,
@@ -377,7 +378,7 @@ internal fun ModuleItem(
                                     modifier = Modifier.size(18.dp),
                                     imageVector = Icons.Rounded.Code,
                                     tint = webUiTint,
-                                    contentDescription = context.getString(CoreR.string.module_webui),
+                                    contentDescription = stringResource(CoreR.string.module_webui),
                                 )
                             } else {
                                 Row(
@@ -389,10 +390,10 @@ internal fun ModuleItem(
                                         modifier = Modifier.size(18.dp),
                                         imageVector = Icons.Rounded.Code,
                                         tint = webUiTint,
-                                        contentDescription = context.getString(CoreR.string.module_webui),
+                                        contentDescription = stringResource(CoreR.string.module_webui),
                                     )
                                     Text(
-                                        text = context.getString(CoreR.string.module_webui),
+                                        text = stringResource(CoreR.string.module_webui),
                                         color = webUiTint,
                                         fontWeight = FontWeight.Medium,
                                         fontSize = 14.sp,
@@ -416,7 +417,7 @@ internal fun ModuleItem(
                                     modifier = Modifier.size(18.dp),
                                     imageVector = Icons.Rounded.Add,
                                     tint = shortcutTint,
-                                    contentDescription = context.getString(CoreR.string.module_shortcut_button),
+                                    contentDescription = stringResource(CoreR.string.module_shortcut_button),
                                 )
                             } else {
                                 Row(
@@ -428,10 +429,10 @@ internal fun ModuleItem(
                                         modifier = Modifier.size(18.dp),
                                         imageVector = Icons.Rounded.Add,
                                         tint = shortcutTint,
-                                        contentDescription = context.getString(CoreR.string.module_shortcut_button),
+                                        contentDescription = stringResource(CoreR.string.module_shortcut_button),
                                     )
                                     Text(
-                                        text = context.getString(CoreR.string.module_shortcut_button),
+                                        text = stringResource(CoreR.string.module_shortcut_button),
                                         color = shortcutTint,
                                         fontWeight = FontWeight.Medium,
                                         fontSize = 14.sp,
@@ -458,7 +459,7 @@ internal fun ModuleItem(
                                     modifier = Modifier.size(18.dp),
                                     imageVector = MiuixIcons.UploadCloud,
                                     tint = updateTint,
-                                    contentDescription = context.getString(CoreR.string.update),
+                                    contentDescription = stringResource(CoreR.string.update),
                                 )
                             } else {
                                 Row(
@@ -470,10 +471,10 @@ internal fun ModuleItem(
                                         modifier = Modifier.size(18.dp),
                                         imageVector = MiuixIcons.UploadCloud,
                                         tint = updateTint,
-                                        contentDescription = context.getString(CoreR.string.update),
+                                        contentDescription = stringResource(CoreR.string.update),
                                     )
                                     Text(
-                                        text = context.getString(CoreR.string.update),
+                                        text = stringResource(CoreR.string.update),
                                         color = updateTint,
                                         fontWeight = FontWeight.Medium,
                                         fontSize = 14.sp,
@@ -487,9 +488,9 @@ internal fun ModuleItem(
                         val secondaryContainer = MiuixTheme.colorScheme.secondaryContainer.copy(alpha = 0.8f)
                         val actionIconTint = MiuixTheme.colorScheme.onSurface.copy(alpha = 0.9f)
                         val removeButtonText = if (module.removed) {
-                            context.getString(CoreR.string.module_state_restore)
+                            stringResource(CoreR.string.module_state_restore)
                         } else {
-                            context.getString(CoreR.string.module_state_remove)
+                            stringResource(CoreR.string.module_state_remove)
                         }
                         IconButton(
                             minHeight = 32.dp,

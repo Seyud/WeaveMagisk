@@ -25,8 +25,8 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -61,8 +61,6 @@ import top.yukonga.miuix.kmp.utils.pressable
 internal fun NoticeCard(
     onHide: () -> Unit,
 ) {
-    val context = LocalContext.current
-
     Card(
         modifier = Modifier
             .padding(top = 12.dp)
@@ -84,13 +82,13 @@ internal fun NoticeCard(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = context.getString(CoreR.string.home_notice_content),
+                text = stringResource(CoreR.string.home_notice_content),
                 modifier = Modifier.weight(1f),
                 color = MiuixTheme.colorScheme.onPrimary,
                 style = MiuixTheme.textStyles.body1
             )
             TextButton(
-                text = context.getString(CoreR.string.hide),
+                text = stringResource(CoreR.string.hide),
                 onClick = onHide,
                 colors = ButtonDefaults.textButtonColors(
                     textColor = MiuixTheme.colorScheme.onPrimary,
@@ -140,7 +138,6 @@ internal fun InstallActionButton(
     usePrimaryBlockStyleWhenNonMonet: Boolean = false,
     onClick: () -> Unit,
 ) {
-    val context = LocalContext.current
     val isMonetTheme = LocalIsMonetTheme.current
     val weaveAccentColor = if (isMonetTheme) {
         MiuixTheme.colorScheme.primary
@@ -149,9 +146,9 @@ internal fun InstallActionButton(
     }
     val icon = if (appState == HomeViewModel.State.OUTDATED) MiuixIcons.Update else MiuixIcons.Download
     val text = if (appState == HomeViewModel.State.OUTDATED) {
-        context.getString(CoreR.string.update)
+        stringResource(CoreR.string.update)
     } else {
-        context.getString(CoreR.string.install)
+        stringResource(CoreR.string.install)
     }
     val buttonColors = if (appState == HomeViewModel.State.OUTDATED) {
         ButtonDefaults.buttonColorsPrimary()
@@ -246,8 +243,7 @@ internal fun UninstallButton(
     text: String? = null,
     onPressed: () -> Unit,
 ) {
-    val context = LocalContext.current
-    val buttonText = text ?: context.getString(CoreR.string.uninstall_magisk_title)
+    val buttonText = text ?: stringResource(CoreR.string.uninstall_magisk_title)
 
     Surface(
         onClick = onPressed,
@@ -334,11 +330,10 @@ internal fun ZygiskCard(
     isEnabled: Boolean,
     modifier: Modifier = Modifier,
 ) {
-    val context = LocalContext.current
     StatusIndicatorCard(
         icon = MiuixIcons.Pin,
-        label = context.getString(CoreR.string.zygisk),
-        statusText = context.getString(
+        label = stringResource(CoreR.string.zygisk),
+        statusText = stringResource(
             if (isEnabled) CoreR.string.home_status_enabled else CoreR.string.home_status_disabled
         ),
         isPositive = isEnabled,
@@ -351,11 +346,10 @@ internal fun RamdiskCard(
     isAvailable: Boolean,
     modifier: Modifier = Modifier,
 ) {
-    val context = LocalContext.current
     StatusIndicatorCard(
         icon = MiuixIcons.Backup,
         label = "Ramdisk",
-        statusText = context.getString(
+        statusText = stringResource(
             if (isAvailable) CoreR.string.home_status_supported else CoreR.string.home_status_unsupported
         ),
         isPositive = isAvailable,
@@ -374,14 +368,13 @@ internal fun ManagerCard(
     onCardClick: () -> Unit,
     onInstallClick: () -> Unit,
 ) {
-    val context = LocalContext.current
     val isInteractive = appState == HomeViewModel.State.OUTDATED ||
         appState == HomeViewModel.State.UP_TO_DATE
     val actionLabel = when (appState) {
-        HomeViewModel.State.OUTDATED -> context.getString(CoreR.string.update)
-        HomeViewModel.State.UP_TO_DATE -> context.getString(CoreR.string.install)
-        HomeViewModel.State.INVALID -> context.getString(CoreR.string.no_connection)
-        HomeViewModel.State.LOADING -> context.getString(CoreR.string.loading)
+        HomeViewModel.State.OUTDATED -> stringResource(CoreR.string.update)
+        HomeViewModel.State.UP_TO_DATE -> stringResource(CoreR.string.install)
+        HomeViewModel.State.INVALID -> stringResource(CoreR.string.no_connection)
+        HomeViewModel.State.LOADING -> stringResource(CoreR.string.loading)
     }
     val actionIcon = when (appState) {
         HomeViewModel.State.OUTDATED -> MiuixIcons.Update
@@ -494,15 +487,15 @@ internal fun ManagerCard(
 
             Column(modifier = Modifier.fillMaxWidth()) {
                 HomeItemRow(
-                    label = context.getString(CoreR.string.home_latest_version),
+                    label = stringResource(CoreR.string.home_latest_version),
                     value = remoteVersion
                 )
                 HomeItemRow(
-                    label = context.getString(CoreR.string.home_installed_version),
+                    label = stringResource(CoreR.string.home_installed_version),
                     value = installedVersion
                 )
                 HomeItemRow(
-                    label = context.getString(CoreR.string.home_package),
+                    label = stringResource(CoreR.string.home_package),
                     value = packageName
                 )
             }
@@ -597,12 +590,11 @@ internal data class MagiskCardState(
             magiskState: HomeViewModel.State,
             expanded: Boolean,
         ): MagiskCardState {
-            val context = LocalContext.current
             val isInteractive = magiskState != HomeViewModel.State.LOADING
             val actionText = if (magiskState == HomeViewModel.State.OUTDATED) {
-                context.getString(CoreR.string.update)
+                stringResource(CoreR.string.update)
             } else {
-                context.getString(CoreR.string.install)
+                stringResource(CoreR.string.install)
             }
             val actionIcon = if (magiskState == HomeViewModel.State.OUTDATED) {
                 MiuixIcons.Update

@@ -8,6 +8,7 @@ import android.view.MotionEvent
 import android.view.Window
 import android.view.WindowManager
 import androidx.activity.ComponentActivity
+import androidx.activity.addCallback
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -127,6 +128,12 @@ class SuRequestActivity : ComponentActivity(), UntrackedActivity, IActivityExten
             }
         }
 
+        // 返回键处理：触发拒绝操作
+        // （OnBackPressedCallback 替代已废弃的 onBackPressed 重写，行为一致）
+        onBackPressedDispatcher.addCallback(this) {
+            viewModel.denyPressed()
+        }
+
         // 生命周期观察
         lifecycle.addObserver(LifecycleEventObserver { _, event ->
             if (event == Lifecycle.Event.ON_DESTROY) {
@@ -179,15 +186,6 @@ class SuRequestActivity : ComponentActivity(), UntrackedActivity, IActivityExten
             }
         }
         return super.dispatchTouchEvent(event)
-    }
-
-    /**
-     * 返回键处理
-     * 触发拒绝操作
-     */
-    @Deprecated("Deprecated in Java")
-    override fun onBackPressed() {
-        viewModel.denyPressed()
     }
 
     /**

@@ -32,6 +32,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -157,10 +158,11 @@ fun ActionScreen(
     }
 
     // 显示完成提示
+    val doneActionText = stringResource(CoreR.string.done_action, moduleName)
     LaunchedEffect(actionState) {
         if (actionState == ActionState.SUCCESS) {
             context.toast(
-                context.getString(CoreR.string.done_action, moduleName),
+                doneActionText,
                 Toast.LENGTH_SHORT
             )
         }
@@ -218,7 +220,7 @@ fun ActionScreen(
                         ) {
                             Icon(
                                 imageVector = MiuixIcons.Download,
-                                contentDescription = context.getString(CoreR.string.menuSaveLog)
+                                contentDescription = stringResource(CoreR.string.menuSaveLog)
                             )
                         }
                     }
@@ -274,7 +276,7 @@ fun ActionScreen(
                     onClick = exitAction,
                     modifier = Modifier.padding(16.dp)
                 ) {
-                    Text(text = context.getString(CoreR.string.close))
+                    Text(text = stringResource(CoreR.string.close))
                 }
             }
         }

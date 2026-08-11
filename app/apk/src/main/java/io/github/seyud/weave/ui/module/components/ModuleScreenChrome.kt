@@ -15,7 +15,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInWindow
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
@@ -91,7 +90,6 @@ internal fun ModuleScreenTopBar(
     onToggleSortUpdateFirst: () -> Unit,
     onToggleSortExecutableFirst: () -> Unit,
 ) {
-    val context = LocalContext.current
     val density = LocalDensity.current
     val dynamicTopPadding by remember {
         derivedStateOf { 12.dp * (1f - scrollBehavior.state.collapsedFraction) }
@@ -102,7 +100,7 @@ internal fun ModuleScreenTopBar(
     ) {
         TopAppBar(
             color = barBlurContainerColor(blurBackdrop, MiuixTheme.colorScheme.surface),
-            title = context.getString(CoreR.string.modules),
+            title = stringResource(CoreR.string.modules),
             titleColor = MiuixTheme.colorScheme.onBackground,
             largeTitleColor = MiuixTheme.colorScheme.onBackground,
             navigationIcon = {

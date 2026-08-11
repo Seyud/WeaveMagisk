@@ -115,8 +115,7 @@ class WeaveDialog(
         val onClick: () -> Unit,
     )
 
-    @StringRes
-    fun setTitle(titleId: Int) {
+    fun setTitle(@StringRes titleId: Int) {
         title = activity.getString(titleId)
     }
 

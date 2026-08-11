@@ -287,7 +287,7 @@ fun SuperuserScreen(
                 ) {
                     TopAppBar(
                         color = if (blurBackdrop != null) Color.Transparent else MiuixTheme.colorScheme.surface,
-                        title = context.getString(CoreR.string.superuser),
+                        title = stringResource(CoreR.string.superuser),
                         titleColor = MiuixTheme.colorScheme.onBackground,
                         largeTitleColor = MiuixTheme.colorScheme.onBackground,
                         scrollBehavior = scrollBehavior,
@@ -377,10 +377,10 @@ fun SuperuserScreen(
                         contentPadding = PaddingValues(top = innerPadding.calculateTopPadding() + boxHeight.value + 6.dp),
                         topAppBarScrollBehavior = scrollBehavior,
                         refreshTexts = listOf(
-                            context.getString(CoreR.string.pull_down_to_refresh),
-                            context.getString(CoreR.string.release_to_refresh),
-                            context.getString(CoreR.string.refreshing),
-                            context.getString(CoreR.string.refreshed_successfully)
+                            stringResource(CoreR.string.pull_down_to_refresh),
+                            stringResource(CoreR.string.release_to_refresh),
+                            stringResource(CoreR.string.refreshing),
+                            stringResource(CoreR.string.refreshed_successfully)
                         ),
                         onRefresh = {
                             if (!uiState.isRefreshing) {
@@ -456,7 +456,6 @@ fun SuperuserScreen(
 private fun LoadingContent(
     modifier: Modifier = Modifier
 ) {
-    val context = LocalContext.current
     Box(
         modifier = modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
@@ -467,7 +466,7 @@ private fun LoadingContent(
             InfiniteProgressIndicator()
             Spacer(modifier = Modifier.height(16.dp))
             Text(
-                text = context.getString(CoreR.string.loading),
+                text = stringResource(CoreR.string.loading),
                 style = MiuixTheme.textStyles.title3,
                 fontWeight = FontWeight.Bold
             )
@@ -482,13 +481,12 @@ private fun LoadingContent(
 private fun EmptyContent(
     modifier: Modifier = Modifier
 ) {
-    val context = LocalContext.current
     Box(
         modifier = modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
         Text(
-            text = context.getString(CoreR.string.superuser_policy_none),
+            text = stringResource(CoreR.string.superuser_policy_none),
             modifier = Modifier.padding(horizontal = 16.dp),
             style = MiuixTheme.textStyles.title3,
             fontWeight = FontWeight.Bold,
@@ -624,7 +622,6 @@ private fun PolicyItem(
     onUpdatePolicy: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val cardAlpha = if (item.isEnabled) 1f else 0.5f
     val hasPolicyRecord = item.policy != SuPolicy.QUERY
@@ -722,7 +719,7 @@ private fun PolicyItem(
                             modifier = Modifier.width(120.dp)
                         )
                             Text(
-                                text = context.getString(policyToTextRes(item.policy)),
+                                text = stringResource(policyToTextRes(item.policy)),
                                 style = MiuixTheme.textStyles.body2,
                                 color = MiuixTheme.colorScheme.onSurface,
                                 fontWeight = FontWeight.Medium
@@ -754,7 +751,7 @@ private fun PolicyItem(
                         ) {
                             TextButtonWithIcon(
                                 icon = Icons.Filled.Notifications,
-                                text = context.getString(CoreR.string.superuser_toggle_notification),
+                                text = stringResource(CoreR.string.superuser_toggle_notification),
                                 isSelected = item.shouldNotify,
                                 onClick = onUpdateNotify,
                                 modifier = Modifier.weight(1f)
@@ -764,7 +761,7 @@ private fun PolicyItem(
 
                             TextButtonWithIcon(
                                 icon = Icons.AutoMirrored.Filled.Article,
-                                text = context.getString(CoreR.string.logs),
+                                text = stringResource(CoreR.string.logs),
                                 isSelected = item.shouldLog,
                                 onClick = onUpdateLogging,
                                 modifier = Modifier.weight(1f)
@@ -774,7 +771,7 @@ private fun PolicyItem(
 
                             TextButtonWithIcon(
                                 icon = MiuixIcons.Delete,
-                                text = context.getString(CoreR.string.superuser_toggle_revoke),
+                                text = stringResource(CoreR.string.superuser_toggle_revoke),
                                 isError = true,
                                 onClick = onDelete,
                                 modifier = Modifier.weight(1f)

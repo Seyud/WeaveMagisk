@@ -27,6 +27,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import io.github.seyud.weave.core.Config
 import io.github.seyud.weave.core.utils.LocaleSetting
@@ -70,7 +71,7 @@ fun AppLanguageScreen(
     val enableBlur = LocalEnableBlur.current
     val surfaceColor = MiuixTheme.colorScheme.surface
     val blurBackdrop = rememberBarBlurBackdrop(enableBlur, surfaceColor)
-    val systemDefaultLabel = context.getString(CoreR.string.system_default)
+    val systemDefaultLabel = stringResource(CoreR.string.system_default)
     val tags = remember { LocaleSetting.available.tags.toList() }
     val localeList = remember(tags, systemDefaultLabel) {
         tags.mapIndexed { index, tag ->
@@ -139,8 +140,8 @@ fun AppLanguageScreen(
             TopAppBar(
                 modifier = Modifier.defaultBarBlur(blurBackdrop, surfaceColor),
                 color = barBlurContainerColor(blurBackdrop, surfaceColor),
-                title = context.getString(CoreR.string.app_language),
-                largeTitle = context.getString(CoreR.string.app_language),
+                title = stringResource(CoreR.string.app_language),
+                largeTitle = stringResource(CoreR.string.app_language),
                 scrollBehavior = scrollBehavior,
                 navigationIcon = {
                     IconButton(
@@ -177,7 +178,7 @@ fun AppLanguageScreen(
                 overscrollEffect = null,
             ) {
                 item {
-                    SmallTitle(text = context.getString(CoreR.string.settings_language_suggested))
+                    SmallTitle(text = stringResource(CoreR.string.settings_language_suggested))
                     Card(
                         modifier = Modifier
                             .padding(top = 12.dp)
@@ -199,7 +200,7 @@ fun AppLanguageScreen(
                 }
 
                 item {
-                    SmallTitle(text = context.getString(CoreR.string.settings_language_all))
+                    SmallTitle(text = stringResource(CoreR.string.settings_language_all))
                     Card(
                         modifier = Modifier.fillMaxWidth(),
                     ) {

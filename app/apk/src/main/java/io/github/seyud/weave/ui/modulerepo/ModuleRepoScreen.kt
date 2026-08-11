@@ -1,5 +1,6 @@
 package io.github.seyud.weave.ui.modulerepo
 
+import android.annotation.SuppressLint
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
@@ -59,6 +60,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.stringResource
@@ -130,9 +132,8 @@ import io.github.seyud.weave.core.R as CoreR
 
 @Composable
 fun ModuleRepoScreen(viewModel: ModuleRepoViewModel, onNavigateBack: () -> Unit, onOpenModuleDetail: (String) -> Unit, modifier: Modifier = Modifier) {
-    val context = LocalContext.current
     val state = viewModel.uiState
-    val locale = Locale.getDefault()
+    val locale = LocalConfiguration.current.locales[0]
     val scrollBehavior = MiuixScrollBehavior()
     val blurBackdrop = rememberBarBlurBackdrop(LocalEnableBlur.current, MiuixTheme.colorScheme.surface)
     val pull = rememberPullToRefreshState()
@@ -230,14 +231,14 @@ fun ModuleRepoScreen(viewModel: ModuleRepoViewModel, onNavigateBack: () -> Unit,
             pullToRefreshState = pull,
             contentPadding = PaddingValues(top = innerPadding.calculateTopPadding()),
             topAppBarScrollBehavior = scrollBehavior,
-            refreshTexts = listOf(context.getString(CoreR.string.pull_down_to_refresh), context.getString(CoreR.string.release_to_refresh), context.getString(CoreR.string.refreshing), context.getString(CoreR.string.refreshed_successfully)),
+            refreshTexts = listOf(stringResource(CoreR.string.pull_down_to_refresh), stringResource(CoreR.string.release_to_refresh), stringResource(CoreR.string.refreshing), stringResource(CoreR.string.refreshed_successfully)),
             onRefresh = {
                 viewModel.refresh(forceLoading = state.modules.isEmpty())
                 refreshTick.value++
             },
         ) {
             if (state.isLoading && state.modules.isEmpty()) {
-                RepoCenterState(title = state.errorMessage, loading = state.errorMessage.isNullOrBlank(), actionLabel = if (state.errorMessage.isNullOrBlank()) null else context.getString(CoreR.string.network_retry), onActionClick = if (state.errorMessage.isNullOrBlank()) null else ({ viewModel.refresh(forceLoading = true) }), modifier = Modifier.padding(top = innerPadding.calculateTopPadding(), start = innerPadding.calculateStartPadding(layoutDirection), end = innerPadding.calculateEndPadding(layoutDirection)))
+                RepoCenterState(title = state.errorMessage, loading = state.errorMessage.isNullOrBlank(), actionLabel = if (state.errorMessage.isNullOrBlank()) null else stringResource(CoreR.string.network_retry), onActionClick = if (state.errorMessage.isNullOrBlank()) null else ({ viewModel.refresh(forceLoading = true) }), modifier = Modifier.padding(top = innerPadding.calculateTopPadding(), start = innerPadding.calculateStartPadding(layoutDirection), end = innerPadding.calculateEndPadding(layoutDirection)))
             } else {
                 val listState = rememberLazyListState()
                 val latestModules = rememberUpdatedState(modules)
@@ -264,7 +265,7 @@ fun ModuleRepoScreen(viewModel: ModuleRepoViewModel, onNavigateBack: () -> Unit,
                     verticalArrangement = Arrangement.spacedBy(12.dp),
                     overscrollEffect = null,
                 ) {
-                    if (modules.isEmpty()) item { RepoCenterState(title = context.getString(CoreR.string.module_repo_empty), modifier = Modifier.fillMaxWidth()) }
+                    if (modules.isEmpty()) item { RepoCenterState(title = stringResource(CoreR.string.module_repo_empty), modifier = Modifier.fillMaxWidth()) }
                     items(modules, key = { it.moduleId }, contentType = { "module" }) { module ->
                         RepoModuleSummaryCard(
                             module = module,
@@ -334,6 +335,7 @@ fun ModuleRepoDetailScreen(moduleId: String, onNavigateBack: () -> Unit, modifie
     var downloadConfirmMessage by remember { mutableStateOf("") }
     var pendingDownloadAction by remember { mutableStateOf<(() -> Unit)?>(null) }
     val cachedDetail = remember(moduleId, baseUrl) { repository.getCachedModuleDetail(moduleId = moduleId, baseUrl = baseUrl) }
+    val failureText = stringResource(CoreR.string.failure)
     val detailState by produceState(initialValue = RepoDetailState(detail = cachedDetail, isLoading = cachedDetail == null), key1 = moduleId, key2 = baseUrl, key3 = refreshKey) {
         val initialDetail = repository.getCachedModuleDetail(moduleId = moduleId, baseUrl = baseUrl)
         if (refreshKey == 0 && initialDetail != null) {
@@ -347,7 +349,7 @@ fun ModuleRepoDetailScreen(moduleId: String, onNavigateBack: () -> Unit, modifie
                 if (initialDetail != null) {
                     RepoDetailState(detail = initialDetail)
                 } else {
-                    RepoDetailState(errorMessage = it.message ?: context.getString(CoreR.string.failure))
+                    RepoDetailState(errorMessage = it.message ?: failureText)
                 }
             },
         )
@@ -415,7 +417,7 @@ fun ModuleRepoDetailScreen(moduleId: String, onNavigateBack: () -> Unit, modifie
     ) { innerPadding ->
         when {
             detailState.isLoading -> RepoCenterState(loading = true, modifier = Modifier.padding(top = innerPadding.calculateTopPadding(), start = innerPadding.calculateStartPadding(layoutDirection), end = innerPadding.calculateEndPadding(layoutDirection)))
-            detailState.detail == null -> RepoCenterState(title = detailState.errorMessage, actionLabel = context.getString(CoreR.string.network_retry), onActionClick = { refreshKey += 1 }, modifier = Modifier.padding(top = innerPadding.calculateTopPadding(), start = innerPadding.calculateStartPadding(layoutDirection), end = innerPadding.calculateEndPadding(layoutDirection)))
+            detailState.detail == null -> RepoCenterState(title = detailState.errorMessage, actionLabel = stringResource(CoreR.string.network_retry), onActionClick = { refreshKey += 1 }, modifier = Modifier.padding(top = innerPadding.calculateTopPadding(), start = innerPadding.calculateStartPadding(layoutDirection), end = innerPadding.calculateEndPadding(layoutDirection)))
             else -> {
                 val detail = detailState.detail ?: return@Scaffold
                 HorizontalPager(
@@ -617,6 +619,7 @@ private fun ReleaseAssetRow(
     val actionIconTint = MiuixTheme.colorScheme.onSurface.copy(alpha = 0.9f)
     val metaText = remember(asset.size, asset.downloadCount) { "${formatFileSize(asset.size)} · ${asset.downloadCount} downloads" }
     val installVersion = release.version.ifBlank { release.name }
+    val startDownloadingText = stringResource(CoreR.string.module_start_downloading, asset.name)
     val downloadSubject = remember(detail.moduleId, detail.displayName, installVersion, release.versionCode, asset.downloadUrl) {
         val onlineModule = OnlineModule(
             id = detail.moduleId,
@@ -668,7 +671,7 @@ private fun ReleaseAssetRow(
                     FlashRequest.install(existingUri).toPendingIntent(context).send()
                 } else {
                     onRequestDownloadConfirm(
-                        context.getString(CoreR.string.module_start_downloading, asset.name)
+                        startDownloadingText
                     ) {
                         isDownloading = true
                         if (activity != null) {
@@ -807,8 +810,14 @@ private fun startRepoAssetTransfer(context: Context, activity: MainActivity?, mo
     if (activity != null) DownloadEngine.startWithActivity(activity, subject) else DownloadEngine.start(context.applicationContext, subject)
 }
 
+// UnsafeImplicitIntentLaunch 为误报：SuRequestActivity 的 VIEW filter 未声明 <data>，
+// 不可能匹配带 http(s) URI 的 intent；CATEGORY_BROWSABLE 已限定只由浏览器解析
+@SuppressLint("UnsafeImplicitIntentLaunch")
 private fun openExternalLink(context: Context, url: String) {
-    val intent = Intent(Intent.ACTION_VIEW, url.toUri()).apply { addFlags(Intent.FLAG_ACTIVITY_NEW_TASK) }
+    val intent = Intent(Intent.ACTION_VIEW, url.toUri()).apply {
+        addCategory(Intent.CATEGORY_BROWSABLE)
+        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+    }
     try {
         context.startActivity(intent)
     } catch (_: ActivityNotFoundException) {

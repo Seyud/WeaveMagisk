@@ -80,6 +80,7 @@ fun InstallScreen(
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
+    val failureText = stringResource(CoreR.string.failure)
 
     val step = viewModel.step
     var keepVerity by remember { mutableStateOf(Config.keepVerity) }
@@ -176,7 +177,7 @@ fun InstallScreen(
         modifier = modifier,
         topBar = {
             TopAppBar(
-                title = context.getString(CoreR.string.install),
+                title = stringResource(CoreR.string.install),
                 navigationIcon = {
                     IconButton(
                         onClick = onNavigateBack
@@ -261,7 +262,7 @@ fun InstallScreen(
                                     .onFailure { error ->
                                         Toast.makeText(
                                             context,
-                                            error.message ?: context.getString(CoreR.string.failure),
+                                            error.message ?: failureText,
                                             Toast.LENGTH_LONG
                                         ).show()
                                         return@launch
@@ -303,8 +304,6 @@ private fun OptionsCard(
     onRecoveryChange: () -> Unit,
     onNextClick: () -> Unit
 ) {
-    val context = LocalContext.current
-
     Card(modifier = Modifier.fillMaxWidth()) {
         Column(
             modifier = Modifier
@@ -325,7 +324,7 @@ private fun OptionsCard(
                 Spacer(modifier = Modifier.width(16.dp))
 
                 Text(
-                    text = context.getString(CoreR.string.install_options_title),
+                    text = stringResource(CoreR.string.install_options_title),
                     style = MiuixTheme.textStyles.body1,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.weight(1f)
@@ -333,7 +332,7 @@ private fun OptionsCard(
 
                 if (step == 0) {
                     TextButton(
-                        text = context.getString(CoreR.string.install_next),
+                        text = stringResource(CoreR.string.install_next),
                         onClick = onNextClick
                     )
                 }
@@ -360,7 +359,7 @@ private fun OptionsCard(
                         )
                         Spacer(modifier = Modifier.width(12.dp))
                         Text(
-                            text = context.getString(CoreR.string.keep_dm_verity),
+                            text = stringResource(CoreR.string.keep_dm_verity),
                             style = MiuixTheme.textStyles.body1
                         )
                     }
@@ -384,7 +383,7 @@ private fun OptionsCard(
                         )
                         Spacer(modifier = Modifier.width(12.dp))
                         Text(
-                            text = context.getString(CoreR.string.keep_force_encryption),
+                            text = stringResource(CoreR.string.keep_force_encryption),
                             style = MiuixTheme.textStyles.body1
                         )
                     }
@@ -408,7 +407,7 @@ private fun OptionsCard(
                         )
                         Spacer(modifier = Modifier.width(12.dp))
                         Text(
-                            text = context.getString(CoreR.string.recovery_mode),
+                            text = stringResource(CoreR.string.recovery_mode),
                             style = MiuixTheme.textStyles.body1
                         )
                     }
@@ -436,8 +435,6 @@ private fun MethodCard(
     onMethodChange: (InstallMethod?) -> Unit,
     onInstallClick: () -> Unit
 ) {
-    val context = LocalContext.current
-
     val isMethodPatch = selectedMethod == InstallMethod.PATCH
     val isMethodDownload = selectedMethod == InstallMethod.DOWNLOAD
     val isMethodSelected = if (isMethodPatch) (dataUri != null || deferredPatch != null)
@@ -469,7 +466,7 @@ private fun MethodCard(
                 Spacer(modifier = Modifier.width(16.dp))
 
                 Text(
-                    text = context.getString(CoreR.string.install_method_title),
+                    text = stringResource(CoreR.string.install_method_title),
                     style = MiuixTheme.textStyles.body1,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.weight(1f)
@@ -482,7 +479,7 @@ private fun MethodCard(
                         colors = ButtonDefaults.buttonColorsPrimary()
                     ) {
                         Text(
-                            text = context.getString(CoreR.string.install_start),
+                            text = stringResource(CoreR.string.install_start),
                             color = startContentColor
                         )
                         Spacer(modifier = Modifier.width(4.dp))
@@ -517,7 +514,7 @@ private fun MethodCard(
                         )
                         Spacer(modifier = Modifier.width(12.dp))
                         Text(
-                            text = context.getString(CoreR.string.select_patch_file),
+                            text = stringResource(CoreR.string.select_patch_file),
                             style = MiuixTheme.textStyles.body1
                         )
                     }
@@ -539,7 +536,7 @@ private fun MethodCard(
                         )
                         Spacer(modifier = Modifier.width(12.dp))
                         Text(
-                            text = context.getString(CoreR.string.download_patch_file),
+                            text = stringResource(CoreR.string.download_patch_file),
                             style = MiuixTheme.textStyles.body1
                         )
                     }
@@ -592,7 +589,7 @@ private fun MethodCard(
                             )
                             Spacer(modifier = Modifier.width(12.dp))
                             Text(
-                                text = context.getString(CoreR.string.direct_install),
+                                text = stringResource(CoreR.string.direct_install),
                                 style = MiuixTheme.textStyles.body1
                             )
                         }
@@ -616,7 +613,7 @@ private fun MethodCard(
                             )
                             Spacer(modifier = Modifier.width(12.dp))
                             Text(
-                                text = context.getString(CoreR.string.install_inactive_slot),
+                                text = stringResource(CoreR.string.install_inactive_slot),
                                 style = MiuixTheme.textStyles.body1
                             )
                         }

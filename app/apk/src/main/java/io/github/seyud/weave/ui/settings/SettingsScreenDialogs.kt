@@ -107,7 +107,7 @@ internal fun SettingsScreenDialogs(
         onValueChange = { state.moduleRepoBaseUrlInput = it },
         label = stringResource(CoreR.string.module_repo_source_message),
         helperText = Config.normalizeModuleRepoBaseUrl(state.moduleRepoBaseUrlInput.text)
-            ?: context.getString(CoreR.string.module_repo_source_invalid),
+            ?: stringResource(CoreR.string.module_repo_source_invalid),
         confirmText = stringResource(android.R.string.ok),
         dismissText = stringResource(android.R.string.cancel),
         onDismissRequest = { state.showModuleRepoDialog = false },
@@ -124,7 +124,7 @@ internal fun SettingsScreenDialogs(
         value = state.downloadPathInput,
         onValueChange = { state.downloadPathInput = it },
         label = stringResource(CoreR.string.settings_download_path_title),
-        helperText = context.getString(
+        helperText = stringResource(
             CoreR.string.settings_download_path_message,
             MediaStoreUtils.fullPath(Config.downloadDir),
         ),

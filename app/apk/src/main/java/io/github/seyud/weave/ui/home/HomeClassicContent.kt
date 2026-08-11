@@ -10,7 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import io.github.seyud.weave.core.Info
 import io.github.seyud.weave.core.R as CoreR
@@ -29,7 +29,6 @@ internal fun LazyListScope.classicHomeContent(
     cardActionExit: ExitTransition,
 ) {
     item {
-        val context = LocalContext.current
         Column {
             ClassicMagiskCard(
                 magiskState = viewModel.magiskState,
@@ -53,7 +52,7 @@ internal fun LazyListScope.classicHomeContent(
                     )
                     if (Info.env.isActive) {
                         UninstallButton(
-                            text = context.getString(CoreR.string.home_uninstall_weavemask),
+                            text = stringResource(CoreR.string.home_uninstall_weavemask),
                             onPressed = { viewModel.onDeletePressed() }
                         )
                     }

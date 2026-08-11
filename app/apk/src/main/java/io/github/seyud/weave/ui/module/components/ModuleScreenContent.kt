@@ -9,8 +9,8 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -54,7 +54,6 @@ internal fun ModuleScreenContent(
     onHideModule: ((ModuleInfo) -> Unit)?,
     onRevealModule: ((ModuleInfo) -> Unit)?,
 ) {
-    val context = LocalContext.current
     val layoutDirection = LocalLayoutDirection.current
     val pullToRefreshState = rememberPullToRefreshState()
     val listState = rememberLazyListState()
@@ -81,10 +80,10 @@ internal fun ModuleScreenContent(
             ),
             topAppBarScrollBehavior = scrollBehavior,
             refreshTexts = listOf(
-                context.getString(CoreR.string.pull_down_to_refresh),
-                context.getString(CoreR.string.release_to_refresh),
-                context.getString(CoreR.string.refreshing),
-                context.getString(CoreR.string.refreshed_successfully),
+                stringResource(CoreR.string.pull_down_to_refresh),
+                stringResource(CoreR.string.release_to_refresh),
+                stringResource(CoreR.string.refreshing),
+                stringResource(CoreR.string.refreshed_successfully),
             ),
             onRefresh = {
                 if (!uiState.isRefreshing) {
@@ -155,8 +154,6 @@ internal fun ModuleScreenContent(
 internal fun LoadingContent(
     modifier: Modifier = Modifier,
 ) {
-    val context = LocalContext.current
-
     Box(
         modifier = modifier.fillMaxSize(),
         contentAlignment = Alignment.Center,
@@ -167,7 +164,7 @@ internal fun LoadingContent(
             InfiniteProgressIndicator()
             Spacer(modifier = Modifier.height(16.dp))
             Text(
-                text = context.getString(CoreR.string.loading),
+                text = stringResource(CoreR.string.loading),
                 style = MiuixTheme.textStyles.title3,
                 fontWeight = FontWeight.Bold,
             )
@@ -180,8 +177,6 @@ internal fun EmptyContent(
     onInstallPressed: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val context = LocalContext.current
-
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -192,7 +187,7 @@ internal fun EmptyContent(
         InstallModuleEntryButton(onClick = onInstallPressed)
         Spacer(modifier = Modifier.height(16.dp))
         Text(
-            text = context.getString(CoreR.string.module_empty),
+            text = stringResource(CoreR.string.module_empty),
             style = MiuixTheme.textStyles.title3,
             fontWeight = FontWeight.Bold,
         )
@@ -203,8 +198,6 @@ internal fun EmptyContent(
 internal fun InstallModuleEntryButton(
     onClick: () -> Unit,
 ) {
-    val context = LocalContext.current
-
     Button(
         onClick = onClick,
         modifier = Modifier.fillMaxWidth(),
@@ -216,6 +209,6 @@ internal fun InstallModuleEntryButton(
             modifier = Modifier.size(18.dp),
         )
         Spacer(modifier = Modifier.width(6.dp))
-        Text(text = context.getString(CoreR.string.module_action_install_external))
+        Text(text = stringResource(CoreR.string.module_action_install_external))
     }
 }

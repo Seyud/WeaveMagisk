@@ -5,7 +5,7 @@ import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.lazy.LazyListScope
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import io.github.seyud.weave.core.Info
 import io.github.seyud.weave.core.R as CoreR
 
@@ -22,7 +22,6 @@ internal fun LazyListScope.weavskHomeContent(
     cardActionExit: ExitTransition,
 ) {
     item {
-        val context = LocalContext.current
         Column {
             WeavskMagiskCard(
                 magiskState = viewModel.magiskState,
@@ -45,7 +44,7 @@ internal fun LazyListScope.weavskHomeContent(
                     )
                     if (Info.env.isActive) {
                         UninstallButton(
-                            text = context.getString(CoreR.string.home_uninstall_weavemask),
+                            text = stringResource(CoreR.string.home_uninstall_weavemask),
                             onPressed = { viewModel.onDeletePressed() }
                         )
                     }

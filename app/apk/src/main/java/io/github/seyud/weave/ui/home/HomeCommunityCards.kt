@@ -22,8 +22,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import io.github.seyud.weave.core.R as CoreR
@@ -44,7 +44,6 @@ internal fun SupportCard(
     expanded: Boolean = true,
     onExpandedChange: ((Boolean) -> Unit)? = null,
 ) {
-    val context = LocalContext.current
     val chevronRotation by animateFloatAsState(
         targetValue = if (expanded) 90f else 0f,
         animationSpec = tween(durationMillis = 260),
@@ -79,7 +78,7 @@ internal fun SupportCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = context.getString(CoreR.string.home_support_title),
+                    text = stringResource(CoreR.string.home_support_title),
                     fontSize = MiuixTheme.textStyles.headline1.fontSize,
                     fontWeight = FontWeight.Medium,
                     color = MiuixTheme.colorScheme.onSurface,
@@ -110,7 +109,7 @@ internal fun SupportCard(
                     Spacer(modifier = Modifier.height(4.dp))
 
                     Text(
-                        text = context.getString(CoreR.string.home_support_content),
+                        text = stringResource(CoreR.string.home_support_content),
                         fontSize = MiuixTheme.textStyles.body2.fontSize,
                         color = MiuixTheme.colorScheme.onSurfaceVariantSummary
                     )
@@ -123,12 +122,12 @@ internal fun SupportCard(
                     ) {
                         SupportIcon(
                             iconRes = CoreR.drawable.ic_patreon,
-                            contentDescription = context.getString(CoreR.string.patreon),
+                            contentDescription = stringResource(CoreR.string.patreon),
                             onClick = { onLinkPressed(IconLink.Patreon.link) }
                         )
                         SupportIcon(
                             iconRes = CoreR.drawable.ic_paypal,
-                            contentDescription = context.getString(CoreR.string.paypal),
+                            contentDescription = stringResource(CoreR.string.paypal),
                             onClick = { onLinkPressed(IconLink.PayPal.Project.link) }
                         )
                     }
@@ -162,8 +161,6 @@ internal fun FollowCard(
     onLinkPressed: (String) -> Unit,
     onAboutClick: (() -> Unit)? = null,
 ) {
-    val context = LocalContext.current
-
     Card(
         modifier = Modifier
             .padding(top = 12.dp)
@@ -181,7 +178,7 @@ internal fun FollowCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = context.getString(CoreR.string.home_follow_title),
+                    text = stringResource(CoreR.string.home_follow_title),
                     fontSize = MiuixTheme.textStyles.headline1.fontSize,
                     fontWeight = FontWeight.Medium,
                     color = MiuixTheme.colorScheme.onSurface,

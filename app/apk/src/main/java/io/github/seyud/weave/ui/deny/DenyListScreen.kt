@@ -50,6 +50,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.state.ToggleableState
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.DpSize
@@ -106,7 +107,6 @@ fun DenyListScreen(
     onNavigateBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val context = LocalContext.current
     val items by viewModel.items.collectAsStateWithLifecycle()
     val loading by viewModel.loading.collectAsStateWithLifecycle()
     val loadCompleted by viewModel.loadCompleted.collectAsStateWithLifecycle()
@@ -148,8 +148,8 @@ fun DenyListScreen(
             TopAppBar(
                 modifier = Modifier.defaultBarBlur(blurBackdrop, surfaceColor),
                 color = barBlurContainerColor(blurBackdrop, surfaceColor),
-                title = context.getString(CoreR.string.denylist),
-                largeTitle = context.getString(CoreR.string.denylist),
+                title = stringResource(CoreR.string.denylist),
+                largeTitle = stringResource(CoreR.string.denylist),
                 scrollBehavior = scrollBehavior,
                 navigationIcon = {
                     IconButton(
@@ -174,7 +174,7 @@ fun DenyListScreen(
                         val optionSize = if (showSystem) 2 else 1
                         ListPopupColumn {
                             DropdownImpl(
-                                text = context.getString(CoreR.string.show_system_app),
+                                text = stringResource(CoreR.string.show_system_app),
                                 isSelected = showSystem,
                                 optionSize = optionSize,
                                 onSelectedIndexChange = {
@@ -185,7 +185,7 @@ fun DenyListScreen(
                             )
                             if (showSystem) {
                                 DropdownImpl(
-                                    text = context.getString(CoreR.string.show_os_app),
+                                    text = stringResource(CoreR.string.show_os_app),
                                     isSelected = showOS,
                                     optionSize = optionSize,
                                     onSelectedIndexChange = {
@@ -243,7 +243,7 @@ fun DenyListScreen(
                                     onSearch = { },
                                     expanded = searchExpanded,
                                     onExpandedChange = { searchExpanded = it },
-                                    label = context.getString(CoreR.string.hide_filter_hint),
+                                    label = stringResource(CoreR.string.hide_filter_hint),
                                 )
                             },
                             onExpandedChange = { searchExpanded = it },
@@ -342,7 +342,6 @@ private fun toggleSortRank(state: ToggleableState): Int = when (state) {
 private fun LoadingContent(
     modifier: Modifier = Modifier,
 ) {
-    val context = LocalContext.current
     Box(
         modifier = modifier
             .fillMaxWidth()
@@ -353,7 +352,7 @@ private fun LoadingContent(
             InfiniteProgressIndicator()
             Spacer(modifier = Modifier.height(16.dp))
             Text(
-                text = context.getString(CoreR.string.loading),
+                text = stringResource(CoreR.string.loading),
                 color = MiuixTheme.colorScheme.onSurface,
                 style = MiuixTheme.textStyles.body1,
             )
@@ -363,7 +362,6 @@ private fun LoadingContent(
 
 @Composable
 private fun EmptyContent() {
-    val context = LocalContext.current
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -371,7 +369,7 @@ private fun EmptyContent() {
         contentAlignment = Alignment.Center,
     ) {
         Text(
-            text = context.getString(CoreR.string.none),
+            text = stringResource(CoreR.string.none),
             style = MiuixTheme.textStyles.title3,
             fontWeight = FontWeight.Bold,
         )
@@ -506,14 +504,14 @@ private fun DenyListItem(
                                 CircularProgressIndicator(size = 18.dp, strokeWidth = 2.dp)
                                 Spacer(modifier = Modifier.width(8.dp))
                                 Text(
-                                    text = currentContext.getString(CoreR.string.loading),
+                                    text = stringResource(CoreR.string.loading),
                                     style = MiuixTheme.textStyles.body2,
                                 )
                             }
                         }
                         item.hasLoadedProcesses && item.processes.isEmpty() -> {
                             Text(
-                                text = currentContext.getString(CoreR.string.none),
+                                text = stringResource(CoreR.string.none),
                                 style = MiuixTheme.textStyles.body2,
                                 color = MiuixTheme.colorScheme.onSurfaceContainer,
                             )

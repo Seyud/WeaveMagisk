@@ -731,8 +731,6 @@ private fun DeveloperLinksRow(
     links: List<IconLink>,
     onLinkPressed: (String) -> Unit,
 ) {
-    val context = LocalContext.current
-
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -763,7 +761,7 @@ private fun DeveloperLinksRow(
                 ) {
                     Image(
                         painter = painterResource(id = iconRes),
-                        contentDescription = context.getString(link.title),
+                        contentDescription = stringResource(link.title),
                         colorFilter = ColorFilter.tint(MiuixTheme.colorScheme.onSurface),
                         modifier = Modifier.size(20.dp)
                     )

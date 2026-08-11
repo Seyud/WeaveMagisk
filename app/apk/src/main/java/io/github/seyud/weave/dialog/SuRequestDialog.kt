@@ -31,7 +31,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -102,8 +101,6 @@ fun SuRequestDialog(
 ) {
     if (!state.visible) return
 
-    val context = LocalContext.current
-
     // 超时选择器状态
     var expanded by remember { mutableStateOf(false) }
     var selectedIndex by remember(state.selectedTimeoutIndex) {
@@ -137,7 +134,7 @@ fun SuRequestDialog(
             ) {
                 // 标题
                 Text(
-                    text = context.getString(CoreR.string.su_request_title),
+                    text = stringResource(CoreR.string.su_request_title),
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Medium,
                     color = MiuixTheme.colorScheme.onBackground,
@@ -172,7 +169,7 @@ fun SuRequestDialog(
 
                 // 警告文本
                 Text(
-                    text = context.getString(CoreR.string.su_warning),
+                    text = stringResource(CoreR.string.su_warning),
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Bold,
                     color = MiuixTheme.colorScheme.error,
@@ -332,17 +329,15 @@ private fun SuRequestButtons(
     onGrant: () -> Unit,
     onDeny: () -> Unit
 ) {
-    val context = LocalContext.current
-
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         // 拒绝按钮（带倒计时）
         val denyText = if (remainingSeconds > 0) {
-            "${context.getString(CoreR.string.deny)} ($remainingSeconds)"
+            "${stringResource(CoreR.string.deny)} ($remainingSeconds)"
         } else {
-            context.getString(CoreR.string.deny)
+            stringResource(CoreR.string.deny)
         }
 
         TextButton(
@@ -356,7 +351,7 @@ private fun SuRequestButtons(
 
         // 允许按钮
         TextButton(
-            text = context.getString(CoreR.string.grant),
+            text = stringResource(CoreR.string.grant),
             onClick = onGrant,
             enabled = grantEnabled,
             modifier = Modifier.weight(1f),

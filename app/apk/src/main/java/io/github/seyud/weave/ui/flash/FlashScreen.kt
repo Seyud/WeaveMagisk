@@ -38,6 +38,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.Observer
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.compose.ui.text.font.FontFamily
@@ -115,7 +116,7 @@ fun FlashScreen(
         modifier = modifier,
         topBar = {
             TopAppBar(
-                title = context.getString(CoreR.string.flash_screen_title),
+                title = stringResource(CoreR.string.flash_screen_title),
                 navigationIcon = {
                     IconButton(
                         onClick = {
@@ -201,7 +202,7 @@ fun FlashScreen(
                         )
                         Spacer(modifier = Modifier.width(4.dp))
                         Text(
-                            text = context.getString(CoreR.string.reboot),
+                            text = stringResource(CoreR.string.reboot),
                             color = MiuixTheme.colorScheme.onPrimary,
                             fontWeight = FontWeight.Bold
                         )
@@ -214,11 +215,10 @@ fun FlashScreen(
 
 @Composable
 private fun FlashStateCard(state: FlashViewModel.State) {
-    val context = LocalContext.current
     val text = when (state) {
-        FlashViewModel.State.FLASHING -> context.getString(CoreR.string.flashing)
-        FlashViewModel.State.SUCCESS -> context.getString(CoreR.string.done)
-        FlashViewModel.State.FAILED -> context.getString(CoreR.string.failure)
+        FlashViewModel.State.FLASHING -> stringResource(CoreR.string.flashing)
+        FlashViewModel.State.SUCCESS -> stringResource(CoreR.string.done)
+        FlashViewModel.State.FAILED -> stringResource(CoreR.string.failure)
     }
 
     Card(modifier = Modifier.fillMaxWidth()) {

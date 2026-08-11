@@ -13,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import io.github.seyud.weave.core.R as CoreR
 import io.github.seyud.weave.core.base.IActivityExtension
@@ -70,7 +71,7 @@ internal fun HomeDialogHost(
 
     ManagerInstallDialog(
         show = viewModel.managerInstallDialogState.visible,
-        title = context.getString(CoreR.string.home_app_title),
+        title = stringResource(CoreR.string.home_app_title),
         version = viewModel.managerInstallDialogState.version,
         releaseNotes = viewModel.managerInstallDialogState.releaseNotes,
         installEnabled = viewModel.managerInstallDialogState.installEnabled,
@@ -125,13 +126,13 @@ internal fun ManagerInstallDialog(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             TextButton(
-                text = LocalContext.current.getString(android.R.string.cancel),
+                text = stringResource(android.R.string.cancel),
                 onClick = onDismiss,
                 modifier = Modifier.weight(1f)
             )
             Spacer(modifier = Modifier.width(20.dp))
             TextButton(
-                text = LocalContext.current.getString(CoreR.string.install),
+                text = stringResource(CoreR.string.install),
                 onClick = onInstall,
                 modifier = Modifier.weight(1f),
                 enabled = installEnabled,
