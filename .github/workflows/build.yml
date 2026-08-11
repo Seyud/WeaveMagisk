@@ -103,7 +103,7 @@ jobs:
 
       - name: Run AVD test
         timeout-minutes: 15
-        run: scripts/avd.sh test -l -v ${{ matrix.version }} ${{ matrix.type != '' && format('-t {0}', matrix.type) || '' }} out/app-*.apk
+        run: scripts/avd.sh test -l -v ${{ matrix.version }} -t "${{ matrix.type }}" out/app-*.apk
 
       - name: Upload logs on error
         if: ${{ failure() }}
