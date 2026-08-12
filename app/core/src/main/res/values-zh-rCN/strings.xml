@@ -249,6 +249,8 @@
     <string name="settings_su_mode_title">超级用户模式</string>
     <string name="settings_su_professional_mode_title">专业模式</string>
     <string name="settings_su_professional_mode_summary">展示可能不稳定或存在风险的高级功能</string>
+    <string name="settings_su_zygisk_env_inject_title">设置 Zygisk 环境变量</string>
+    <string name="settings_su_zygisk_env_inject_summary">手动设置 ZYGISK_ENABLED=1，让管理器视为 Zygisk 已启用</string>
     <string name="settings_su_mode_blacklist">黑名单模式</string>
     <string name="settings_su_mode_whitelist">白名单模式</string>
     <string name="settings_su_mode_summary_blacklist">仅显示已保存超级用户策略的应用。撤销后会从列表中移除。可用时会同步到 Zygisk Next 黑名单模式。</string>

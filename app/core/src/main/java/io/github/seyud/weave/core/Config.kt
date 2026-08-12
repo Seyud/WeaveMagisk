@@ -40,6 +40,7 @@ object Config : PreferenceConfig, DBConfig {
         const val SU_LIST_MODE = "su_list_mode"
         const val SU_RESTRICT = "su_restrict"
         const val SU_PROFESSIONAL_MODE = "su_professional_mode"
+        const val ZYGISK_ENV_INJECT = "zygisk_env_inject"
         const val SU_LIST_MODE_DENYLIST_SNAPSHOT = "su_list_mode_denylist_snapshot"
         const val SU_LIST_MODE_DENYLIST_SNAPSHOT_ENABLED = "su_list_mode_denylist_snapshot_enabled"
         const val SU_LIST_MODE_DENYLIST_SNAPSHOT_VALID = "su_list_mode_denylist_snapshot_valid"
@@ -232,6 +233,7 @@ object Config : PreferenceConfig, DBConfig {
     var suListMode by preference(Key.SU_LIST_MODE, Value.SU_MODE_BLACKLIST)
     var suRestrict by preference(Key.SU_RESTRICT, false)
     var suProfessionalMode by preference(Key.SU_PROFESSIONAL_MODE, false)
+    var zygiskEnvInject by preference(Key.ZYGISK_ENV_INJECT, false)
     var suListModeDenyListSnapshot by preference(Key.SU_LIST_MODE_DENYLIST_SNAPSHOT, "")
     var suListModeDenyListSnapshotEnabled by preference(Key.SU_LIST_MODE_DENYLIST_SNAPSHOT_ENABLED, false)
     var suListModeDenyListSnapshotValid by preference(Key.SU_LIST_MODE_DENYLIST_SNAPSHOT_VALID, false)

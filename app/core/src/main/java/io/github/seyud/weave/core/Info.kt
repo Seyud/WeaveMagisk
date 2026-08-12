@@ -55,7 +55,14 @@ object Info {
         private set
     var isVendorBoot = false
         private set
-    @JvmField val isZygiskEnabled = System.getenv("ZYGISK_ENABLED") == "1"
+    private val zygiskEnvInjected = System.getenv("ZYGISK_ENABLED") == "1"
+
+    /**
+     * Zygisk 是否启用：daemon 注入了 ZYGISK_ENABLED=1，
+     * 或用户在设置中开启了手动注入（[Config.zygiskEnvInject]）
+     */
+    @JvmStatic val isZygiskEnabled: Boolean
+        get() = zygiskEnvInjected || Config.zygiskEnvInject
     @JvmStatic val isFDE get() = crypto == "block"
     @JvmStatic var ramdisk = false
         private set

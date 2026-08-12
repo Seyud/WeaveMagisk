@@ -1,6 +1,7 @@
 package io.github.seyud.weave.ui.settings
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
@@ -17,6 +18,7 @@ import androidx.compose.material.icons.rounded.AppBlocking
 import androidx.compose.material.icons.rounded.AutoAwesome
 import androidx.compose.material.icons.rounded.Fingerprint
 import androidx.compose.material.icons.rounded.LockReset
+import androidx.compose.material.icons.rounded.Memory
 import androidx.compose.material.icons.rounded.Security
 import androidx.compose.ui.unit.dp
 import io.github.seyud.weave.core.Config
@@ -67,12 +69,33 @@ internal fun SuperuserSettingsSection(
         )
 
         AnimatedVisibility(visible = professionalModeEnabled) {
-            SuperuserModeSelectorItem(
-                res = res,
-                viewModel = viewModel,
-                currentMode = currentSuperuserListMode,
-                isActive = isActive,
-            )
+            Column {
+                SuperuserModeSelectorItem(
+                    res = res,
+                    viewModel = viewModel,
+                    currentMode = currentSuperuserListMode,
+                    isActive = isActive,
+                )
+
+                var zygiskEnvInject by rememberSaveable { mutableStateOf(Config.zygiskEnvInject) }
+                SwitchPreference(
+                    title = stringResource(CoreR.string.settings_su_zygisk_env_inject_title),
+                    summary = stringResource(CoreR.string.settings_su_zygisk_env_inject_summary),
+                    checked = zygiskEnvInject,
+                    onCheckedChange = {
+                        Config.zygiskEnvInject = it
+                        zygiskEnvInject = it
+                    },
+                    startAction = {
+                        Icon(
+                            Icons.Rounded.Memory,
+                            modifier = Modifier.padding(end = 6.dp),
+                            contentDescription = null,
+                            tint = colorScheme.onBackground,
+                        )
+                    },
+                )
+            }
         }
 
         if (visibility.showTapjack) {

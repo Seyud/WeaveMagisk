@@ -62,6 +62,20 @@ internal fun CustomizationSettingsSection(
     SmallTitle(text = stringResource(CoreR.string.settings_customization))
     Card(modifier = Modifier.fillMaxWidth()) {
         ArrowPreference(
+            title = stringResource(CoreR.string.language),
+            summary = appLanguageSummary(res),
+            startAction = {
+                Icon(
+                    Icons.Rounded.Language,
+                    modifier = Modifier.padding(end = 6.dp),
+                    contentDescription = null,
+                    tint = colorScheme.onBackground,
+                )
+            },
+            onClick = onNavigateToAppLanguage,
+        )
+
+        ArrowPreference(
             title = stringResource(CoreR.string.settings_theme),
             summary = stringResource(CoreR.string.settings_theme_summary),
             startAction = {
@@ -116,20 +130,6 @@ internal fun CustomizationSettingsSection(
                 },
             )
         }
-
-        ArrowPreference(
-            title = stringResource(CoreR.string.language),
-            summary = appLanguageSummary(res),
-            startAction = {
-                Icon(
-                    Icons.Rounded.Language,
-                    modifier = Modifier.padding(end = 6.dp),
-                    contentDescription = null,
-                    tint = colorScheme.onBackground,
-                )
-            },
-            onClick = onNavigateToAppLanguage,
-        )
 
         if (visibility.showAddShortcut) {
             ArrowPreference(
