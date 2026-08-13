@@ -5,6 +5,7 @@ import os
 import platform
 import sys
 import shutil
+import socket
 import subprocess
 from pathlib import Path
 from typing import NoReturn
@@ -92,10 +93,20 @@ def ensure_toolchain():
         os.environ["RUSTC_WRAPPER"] = sccache
         os.environ["NDK_CCACHE"] = sccache
         os.environ["CARGO_INCREMENTAL"] = "0"
-        if "SCCACHE_DIR" not in os.environ:
-            props = _read_config_prop()
+
+        props = _read_config_prop()
+        if "SCCACHE_SERVER_PORT" not in os.environ:
             if port := props.get("sccachePort", ""):
                 os.environ["SCCACHE_SERVER_PORT"] = port
+            elif is_windows:
+                # sccache's default port (4226) is commonly reserved by
+                # Hyper-V/WSL on Windows, causing startup to fail with
+                # WSAEACCES (os error 10013). Pick an available local TCP
+                # port instead.
+                with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
+                    sock.bind(("127.0.0.1", 0))
+                    os.environ["SCCACHE_SERVER_PORT"] = str(sock.getsockname()[1])
+        if "SCCACHE_DIR" not in os.environ:
             if cache_dir := props.get("sccacheDir", ""):
                 os.environ["SCCACHE_DIR"] = cache_dir
 
