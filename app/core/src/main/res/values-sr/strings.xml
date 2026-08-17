@@ -45,7 +45,6 @@
     <string name="install_inactive_slot_msg">Ваш уређај ће бити ФОРСИРАН да се покрене на тренутно неактивном слоту након поновног покретања!\nКористите опцију само кад се OTA заврши.\nНастави?</string>
     <string name="setup_title">Додатне поставке</string>
     <string name="select_patch_file">Изаберите фајл</string>
-    <string name="patch_file_msg">Изаберите слику (*.img) или ODIN tarfile (*.tar) или payload.bin (*.bin)</string>
     <string name="reboot_delay_toast">Поново покретање за 5 секунди…</string>
     <string name="flash_screen_title">Инсталација</string>
 
@@ -214,7 +213,6 @@
     <string name="close">Затвори</string>
     <string name="release_notes">Release notes</string>
     <string name="flashing">Флешовање…</string>
-    <string name="running">Покретање…</string>
     <string name="done">Завршено!</string>
     <string name="done_action">Покретање акције %1$s завршено</string>
     <string name="failure">Неуспешно!</string>

@@ -213,7 +213,6 @@
     <string name="close">بستن</string>
     <string name="release_notes">نکته های نسخه</string>
     <string name="flashing">ر حال فلش کردن…</string>
-    <string name="running">در حال اجرا…</string>
     <string name="done">تمام!</string>
     <string name="done_action">انجام عملیات %1$s به پایان رسید</string>
     <string name="failure">ناموفق</string>

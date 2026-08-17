@@ -45,7 +45,6 @@
     <string name="install_inactive_slot_msg">Questo dispositivo verrà FORZATO ad avviarsi usando lo slot inattivo!\nUsa questo metodo solo dopo che un aggiornamento OTA è stato installato.\nVuoi continuare?</string>
     <string name="setup_title">Configurazione aggiuntiva</string>
     <string name="select_patch_file">Seleziona e aggiorna un file</string>
-    <string name="patch_file_msg">Seleziona un\'immagine in formato .img, un file .tar di ODIN o un file payload.bin</string>
     <string name="reboot_delay_toast">Riavvio fra 5 secondi…</string>
     <string name="flash_screen_title">Installazione</string>
 

@@ -60,7 +60,6 @@
     <string name="install_inactive_slot_msg">سيُجبَر جهازك على الإقلاع من الفتحة غير النشطة الحالية بعد إعادة التشغيل!\nاستخدم هذا الخيار فقط بعد اكتمال تحديث OTA.\nهل تريد المتابعة؟</string>
     <string name="setup_title">إعداد إضافي</string>
     <string name="select_patch_file">تحديد ملف وتصحيحه</string>
-    <string name="patch_file_msg">حدد ملف خام (‎*.img) أو ملف ODIN tar (‎*.tar) أو ملف payload.bin (‎*.bin)</string>
     <string name="download_patch_file">تنزيل ملف وتعديله</string>
     <string name="download_dialog_title">أدخل رابط الملف</string>
     <string name="download_dialog_msg">ملف OTA كاملة أو ملف المصنع</string>
@@ -330,7 +329,6 @@
     <string name="close">إغلاق</string>
     <string name="release_notes">ملاحظات الإصدار</string>
     <string name="flashing">جارٍ التثبيت…</string>
-    <string name="running">جارٍ التنفيذ…</string>
     <string name="done">تم!</string>
     <string name="done_action">اكتمل تنفيذ إجراء %1$s</string>
     <string name="failure">فشل!</string>

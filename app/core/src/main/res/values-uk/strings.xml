@@ -44,7 +44,6 @@
     <string name="install_inactive_slot_msg">Ваш пристрій буде примусово перезавантажено в неактивний слот!\nВикористовуйте цю опцію тільки для встановлення OTA.\nПродовжити?</string>
     <string name="setup_title">Додаткове налаштування</string>
     <string name="select_patch_file">Вибрати і пропатчити файл</string>
-    <string name="patch_file_msg">Виберіть необроблений образ (*.img) або стиснутий файл ODIN (*.tar)</string>
     <string name="download_patch_file">Завантажити і пропатчити файл</string>
     <string name="download_dialog_title">Введіть URL образу</string>
     <string name="download_dialog_msg">Повний OTA-образ або заводський образ</string>
@@ -218,7 +217,6 @@
     <string name="close">Закрити</string>
     <string name="release_notes">Особливості версії</string>
     <string name="flashing">Прошивання…</string>
-    <string name="running">Виконання…</string>
     <string name="done">Готово!</string>
     <string name="done_action">Дію %1$s виконано</string>
     <string name="failure">Не вдалося!</string>

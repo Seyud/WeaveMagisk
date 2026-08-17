@@ -44,7 +44,6 @@
     <string name="install_inactive_slot_msg">Perangkat Anda akan DIPAKSA untuk boot ke slot tidak aktif saat ini setelah dimulai ulang!\nGunakan opsi ini hanya setelah OTA selesai.\nLanjutkan?</string>
     <string name="setup_title">Penyiapan tambahan</string>
     <string name="select_patch_file">Pilih dan tambal berkas</string>
-    <string name="patch_file_msg">Pilih berkas image mentah (*.img) atau tar ODIN (*.tar) atau payload.bin (*.bin)</string>
     <string name="download_patch_file">Unduh dan tambal berkas</string>
     <string name="download_dialog_title">Masukkan URL image</string>
     <string name="download_dialog_msg">Image OTA penuh atau image pabrik</string>
@@ -218,7 +217,6 @@
     <string name="close">Tutup</string>
     <string name="release_notes">Catatan rilis</string>
     <string name="flashing">Memasang…</string>
-    <string name="running">Memproses…</string>
     <string name="done">Selesai!</string>
     <string name="done_action">Aksi %1$s selesai</string>
     <string name="failure">Gagal!</string>
