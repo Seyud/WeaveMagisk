@@ -1,9 +1,10 @@
 # AGENTS.md (app subproject)
 
-Guidelines for AI models operating inside the `app/` subproject.
+Guidelines for AI models operating inside the `app/` subproject. Always include and follow the top-level [`AGENTS.md`](../AGENTS.md).
 
 ## 1. Environment & Gradle Setup
 
+- **General Guidelines:** Always follow the top-level [`AGENTS.md`](../AGENTS.md) for general repository rules, environment execution setup, and commit control policies.
 - **Working Directory:** Set working directory to `app/` when working on app code.
 - **Build Orchestrator:** For real builds, run `./build.py app` from the repo root — it configures the ONDK toolchain and environment automatically.
 - **Direct Gradle:** If you must invoke `gradlew` directly (e.g. to verify a dependency change without rebuilding native), run it **from `app/`** (the Gradle project root; running from the repo root fails with `Directory '<repo>' does not contain a Gradle build.`). Verified combo: `./gradlew :apk:assembleRelease :apk:assembleDebug`.
