@@ -74,6 +74,14 @@ class InstallViewModel(svc: NetworkService, markwon: Markwon) : BaseViewModel() 
         }
     }
 
+    /**
+     * 重置安装方式选择（移植自上游 a5bca883：
+     * 文件选择器或下载对话框被取消时回退选中状态）
+     */
+    fun resetMethod() {
+        setMethod(-1, showWarning = false)
+    }
+
     val data: LiveData<Uri?> get() = uri
     val pendingPatch: LiveData<Pair<Uri, String>?> get() = deferredPatch
 

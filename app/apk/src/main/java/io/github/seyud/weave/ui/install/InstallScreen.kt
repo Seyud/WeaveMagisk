@@ -107,6 +107,9 @@ fun InstallScreen(
     }
 
     var showDownloadDialog by rememberSaveable { mutableStateOf(false) }
+    // 标记下载对话框是否由"选择安装方式"触发（而非编辑已有 URL），
+    // 用于在未确认关闭时回退方式选择（移植自上游 a5bca883）
+    var selectingDownloadMethod by rememberSaveable { mutableStateOf(false) }
     var downloadInput by rememberSaveable(stateSaver = TextFieldValue.Saver) {
         mutableStateOf(TextFieldValue(viewModel.downloadUrl))
     }
@@ -135,9 +138,14 @@ fun InstallScreen(
     val patchFilePicker = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.OpenDocument()
     ) { uri ->
-        uri?.let {
+        if (uri == null) {
+            // 上游 a5bca883：选择器被取消且尚未持有有效文件时，重置安装方式
+            if (dataUri == null && deferredPatch == null) {
+                viewModel.resetMethod()
+            }
+        } else {
             val fileName = context.contentResolver.query(
-                it, arrayOf(OpenableColumns.DISPLAY_NAME), null, null, null
+                uri, arrayOf(OpenableColumns.DISPLAY_NAME), null, null, null
             )?.use { cursor ->
                 if (cursor.moveToFirst()) {
                     cursor.getString(
@@ -145,7 +153,7 @@ fun InstallScreen(
                     )
                 } else null
             } ?: "boot.img"
-            viewModel.setDeferredPatch(it, fileName)
+            viewModel.setDeferredPatch(uri, fileName)
         }
     }
 
@@ -162,11 +170,19 @@ fun InstallScreen(
         } else null,
         confirmText = stringResource(android.R.string.ok),
         dismissText = stringResource(android.R.string.cancel),
-        onDismissRequest = { showDownloadDialog = false },
+        onDismissRequest = {
+            showDownloadDialog = false
+            // 上游 a5bca883：对话框未经确认关闭时，回退方式选择
+            if (selectingDownloadMethod) {
+                selectingDownloadMethod = false
+                viewModel.resetMethod()
+            }
+        },
         onConfirm = {
             if (isValid) {
                 viewModel.downloadUrl = trimmed
                 showDownloadDialog = false
+                selectingDownloadMethod = false
             }
         },
         confirmEnabled = isValid,
@@ -252,6 +268,7 @@ fun InstallScreen(
                             patchFilePicker.launch(arrayOf("*/*"))
                         }
                         if (newMethod == InstallMethod.DOWNLOAD) {
+                            selectingDownloadMethod = true
                             openDownloadDialog()
                         }
                     },
