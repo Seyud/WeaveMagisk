@@ -2,6 +2,7 @@ package io.github.seyud.weave.core
 
 import android.os.Bundle
 import androidx.core.content.edit
+import io.github.seyud.weave.core.BuildConfig
 import io.github.seyud.weave.core.di.ServiceLocator
 import io.github.seyud.weave.core.repository.DBConfig
 import io.github.seyud.weave.core.repository.PreferenceConfig
@@ -187,6 +188,11 @@ object Config : PreferenceConfig, DBConfig {
     private var localePrefs by preference(Key.LOCALE, "")
     var doh by preference(Key.DOH, false)
     var updateChannel by preference(Key.RELEASE_CHANNEL, Value.DEFAULT_CHANNEL)
+    val updateChannelIndex get() = when (updateChannel) {
+        Value.DEFAULT_CHANNEL ->
+            if (BuildConfig.DEBUG) Value.DEBUG_CHANNEL else Value.STABLE_CHANNEL
+        else -> updateChannel
+    }
     var customChannelUrl by preference(Key.CUSTOM_CHANNEL, "")
     private var moduleRepoBaseUrlPrefs by preference(Key.MODULE_REPO_BASE_URL, Const.Url.KERNELSU_MODULE_REPO_URL)
     var moduleRepoSortByName by preference(Key.MODULE_REPO_SORT_BY_NAME, false)

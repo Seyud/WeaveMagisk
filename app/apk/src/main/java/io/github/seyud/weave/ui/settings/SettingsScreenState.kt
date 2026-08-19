@@ -103,7 +103,7 @@ internal class SettingsScreenLocalState(
 
 @Composable
 internal fun rememberSettingsScreenLocalState(): SettingsScreenLocalState {
-    val updateChannelIndexState = rememberSaveable { mutableIntStateOf(Config.updateChannel) }
+    val updateChannelIndexState = rememberSaveable { mutableIntStateOf(Config.updateChannelIndex) }
     val showCustomChannelDialogState = rememberSaveable { mutableStateOf(false) }
     val customChannelUrlState = rememberSaveable(stateSaver = TextFieldValue.Saver) {
         mutableStateOf(TextFieldValue(Config.customChannelUrl))
