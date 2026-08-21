@@ -1,0 +1,30 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="256"
+    android:viewportHeight="256">
+    <path
+        android:pathData="M50.8637 156.945C47.349 153.431 47.349 147.732 50.8637 144.217L109.423 85.6579L127.985 104.219L69.4253 162.779C65.9105 166.294 60.2121 166.294 56.6973 162.779L50.8637 156.945Z"
+        android:fillColor="@color/weave_launcher_primary" />
+    <path
+        android:pathData="M128 151.796L186.559 93.2369C190.074 89.7221 195.772 89.7221 199.287 93.2369L205.121 99.0705C208.635 102.585 208.635 108.284 205.121 111.798L146.561 170.358L128 151.796Z"
+        android:fillColor="@color/weave_launcher_primary" />
+    <path
+        android:pathData="M99.0682 50.8779C102.583 47.3632 108.281 47.3632 111.796 50.8779L170.357 109.439L151.796 128L93.2345 69.4394C89.7198 65.9247 89.7198 60.2262 93.2345 56.7115L99.0682 50.8779Z"
+        android:fillColor="@color/weave_launcher_primary" />
+    <path
+        android:pathData="M104.189 128.015L162.75 186.576C166.265 190.091 166.265 195.789 162.75 199.304L156.916 205.138C153.402 208.653 147.703 208.653 144.188 205.138L85.6274 146.577L104.189 128.015Z"
+        android:fillColor="@color/weave_launcher_primary" />
+    <path
+        android:pathData="M109.438 85.6429L144.202 50.8792C147.716 47.3645 153.415 47.3645 156.93 50.8792L162.763 56.7129C166.278 60.2276 166.278 65.9261 162.763 69.4408L128 104.204L109.438 85.6429Z"
+        android:fillColor="@color/weave_launcher_secondary" />
+    <path
+        android:pathData="M93.2211 199.303C89.7064 195.788 89.7064 190.09 93.2211 186.575L127.985 151.811L146.547 170.373L111.783 205.136C108.268 208.651 102.569 208.651 99.0548 205.136L93.2211 199.303Z"
+        android:fillColor="@color/weave_launcher_secondary" />
+    <path
+        android:pathData="M170.342 109.454L205.119 144.231C208.634 147.745 208.634 153.444 205.119 156.959L199.286 162.792C195.771 166.307 190.073 166.307 186.558 162.792L151.781 128.015L170.342 109.454Z"
+        android:fillColor="@color/weave_launcher_secondary" />
+    <path
+        android:pathData="M56.6988 93.2233C60.2135 89.7086 65.912 89.7086 69.4267 93.2233L104.204 128L85.6422 146.562L50.8652 111.785C47.3504 108.27 47.3504 102.572 50.8652 99.057L56.6988 93.2233Z"
+        android:fillColor="@color/weave_launcher_secondary" />
+</vector>

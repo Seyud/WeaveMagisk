@@ -4,9 +4,9 @@
     <item>
         <inset
             android:drawable="@drawable/ic_launcher_legacy_weave"
-            android:insetLeft="0dp"
-            android:insetTop="0dp"
-            android:insetRight="0dp"
-            android:insetBottom="0dp" />
+            android:insetLeft="15%"
+            android:insetTop="15%"
+            android:insetRight="15%"
+            android:insetBottom="15%" />
     </item>
 </layer-list>

@@ -4,9 +4,9 @@
     <foreground>
         <inset
             android:drawable="@drawable/ic_launcher_legacy_weave"
-            android:insetLeft="-8%"
-            android:insetTop="-8%"
-            android:insetRight="-8%"
-            android:insetBottom="-8%" />
+            android:insetLeft="20%"
+            android:insetTop="20%"
+            android:insetRight="20%"
+            android:insetBottom="20%" />
     </foreground>
 </adaptive-icon>

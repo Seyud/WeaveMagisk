@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<inset xmlns:android="http://schemas.android.com/apk/res/android"
-    android:drawable="@drawable/ic_launcher_legacy_weave"
-    android:insetLeft="-40%"
-    android:insetTop="-40%"
-    android:insetRight="-40%"
-    android:insetBottom="-40%" />
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="@drawable/ic_launcher_background" />
+    <item>
+        <inset
+            android:drawable="@drawable/ic_launcher_legacy_weave"
+            android:insetLeft="10%"
+            android:insetTop="10%"
+            android:insetRight="10%"
+            android:insetBottom="10%" />
+    </item>
+</layer-list>

@@ -12,4 +12,8 @@
     <color name="weave_brand_stroke">#193CB8</color>
     <color name="weave_brand_accent">#00B8DB</color>
     <color name="weave_brand_accent_stroke">#005F78</color>
+    <color name="weave_icon_primary">#62748E</color>
+    <color name="weave_icon_secondary">#90A1B9</color>
+    <color name="weave_launcher_primary">#62748E</color>
+    <color name="weave_launcher_secondary">#90A1B9</color>
 </resources>
