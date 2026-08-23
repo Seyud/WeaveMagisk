@@ -105,8 +105,17 @@ impl SuAppContext<'_> {
 
         if use_provider {
             let provider = format!("content://{}.provider", self.info.mgr_pkg);
-            let mut cmd = Command::new("/system/bin/app_process");
+            // Wrap with `timeout -k`: if the manager process is frozen (cached-app
+            // freezer) or killed mid-flight, the synchronous binder reply never
+            // arrives and `.output()` below would block forever, leaking one
+            // ~150MB orphaned app_process per su session. Bound it hard:
+            // SIGTERM at 20s, SIGKILL 5s later.
+            let mut cmd = Command::new("/system/bin/timeout");
             cmd.args([
+                "-k",
+                "5",
+                "20",
+                "/system/bin/app_process",
                 "/system/bin",
                 "com.android.commands.content.Content",
                 "call",
@@ -131,6 +140,12 @@ impl SuAppContext<'_> {
                 // The provider call succeed
                 return;
             }
+
+            // log/notify are fire-and-forget: dropping them when the manager is
+            // broken is acceptable, while the legacy `am start` fallback would
+            // cold-start the whole manager activity for EVERY su command. Only
+            // `request` (use_provider=false) keeps the activity fallback below.
+            return;
         }
 
         let mut cmd = Command::new("/system/bin/app_process");
@@ -155,13 +170,15 @@ impl SuAppContext<'_> {
         extras.iter().for_each(|e| e.add_intent(&mut cmd));
         cmd.env("CLASSPATH", "/system/framework/am.jar");
 
-        // Sometimes `am start` will fail, keep trying until it works
-        loop {
+        // Sometimes `am start` will fail right after boot; retry a few times
+        // with backoff instead of looping forever.
+        for _ in 0..5 {
             if let Ok(output) = cmd.output()
                 && !output.stdout.is_empty()
             {
-                break;
+                return;
             }
+            std::thread::sleep(std::time::Duration::from_secs(2));
         }
     }
 
