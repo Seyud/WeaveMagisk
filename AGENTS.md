@@ -140,7 +140,7 @@ Version config: `app/gradle.properties` (`magisk.versionCode`, `magisk.stubVersi
 
 Adapted from upstream Magisk's AGENTS.md (commit cfd195b5):
 
-1. **Git / Commit Control:** Never commit changes or amend an existing git commit without the user's explicit request or approval. When asked to commit, follow the 50/72 rule (subject ≤ 50 chars, blank line before body, wrap body at 72 chars) and include an `Assisted-by: <Friendly Name of Current Model>` trailer in the body.
+1. **Git / Commit Control:** Never commit changes or amend an existing git commit without the user's explicit request or approval. When asked to commit, follow the 50/72 rule (subject ≤ 50 chars, blank line before body, wrap body at 72 chars) and include an `Assisted-by: <Friendly Name of Current Model>` trailer in the body. The trailer must name the underlying LLM model itself, not the agent framework, runner, or harness.
 2. **Build Invocation:** Prefer `./build.py <command>` for real builds. Standalone native tools (`cargo`, `rustc`, `ndk-build`) must be prefixed with `scripts/env.py` (see "Build Commands" above). App-only `gradlew` may run plain from `app/` per the "Direct Gradle invocation" note.
 3. **Pre-build Native Code:** Before editing code in `native/`, run `./build.py native` at least once to generate FFI bindings (`flags.h`, `flags.rs`) and headers.
 4. **Subproject Context:** Refer to [`app/AGENTS.md`](app/AGENTS.md) when working inside `app/` and [`native/AGENTS.md`](native/AGENTS.md) when working inside `native/`.
