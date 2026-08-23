@@ -214,7 +214,7 @@
     <string name="restore_img">Solo restaurar las imágenes</string>
     <string name="restore_img_msg">Restaurando…</string>
     <string name="restore_done">¡Restauración completa!</string>
-    <string name="restore_fail">Oops... no se encontró una copia de seguridad de las imágenes originales</string>
+    <string name="restore_fail">Oops… no se encontró una copia de seguridad de las imágenes originales</string>
     <string name="setup_fail">Ocurrió un error en la configuración</string>
     <string name="env_fix_title">Configuración adicional</string>
     <string name="env_fix_msg">Tu dispositivo necesita una configuración adicional para que Magisk funcione correctamente. ¿Quieres continuar y reiniciar?</string>

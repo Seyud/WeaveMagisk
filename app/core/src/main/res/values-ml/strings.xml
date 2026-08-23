@@ -13,7 +13,7 @@
     <!--Home-->
     <string name="no_connection">കണക്ഷൻ ലഭ്യമല്ല</string>
     <string name="app_changelog">മാറ്റങ്ങൾ</string>
-    <string name="loading">ലോഡിംഗ്...</string>
+    <string name="loading">ലോഡിംഗ്…</string>
     <string name="update">അപ്ഡേറ്റ്</string>
     <string name="not_available">ലഭ്യമല്ല</string>
     <string name="hide">മറയ്ക്കൂ</string>
@@ -65,7 +65,7 @@
     <string name="su_allow_toast">%1$s-ന് സൂപ്പർയൂസർ അവകാശം ലഭിച്ചു</string>
     <string name="su_deny_toast">%1$s-ന് സൂപ്പർയൂസർ അവകാശം നിഷേധിച്ചു </string>
     <string name="su_snack_grant">%1$s-ന്റെ സൂപ്പർയൂസർ അവകാശം അനുവദിച്ചിരിക്കുന്നു </string>
-    <string name="su_snack_deny">1$s-ന്റെ സൂപ്പർയൂസർ അവകാശം നിഷേധിക്കപ്പെട്ടിരിക്കുന്നു</string>
+    <string name="su_snack_deny">%1$s-ന്റെ സൂപ്പർയൂസർ അവകാശം നിഷേധിക്കപ്പെട്ടിരിക്കുന്നു</string>
     <string name="su_snack_notif_on">%1$s-ന്റെ അറിയിപ്പുകൾ പ്രവർത്തനക്ഷമമാക്കി</string>
     <string name="su_snack_notif_off">%1$s-ന്റെ അറിയിപ്പുകൾ പ്രവർത്തനരഹിതമാക്കി</string>
     <string name="su_snack_log_on">%1$s-ന്റെ ലോഗിംഗ് പ്രവർത്തനക്ഷമമാക്കി</string>
@@ -201,10 +201,10 @@
     <string name="download">ഡൗൺലോഡ്</string>
     <string name="reboot">റീബൂട്ട്</string>
     <string name="release_notes">റിലീസ് നോട്ടുകൾ</string>
-    <string name="flashing">ഫ്ലാഷ് ചെയ്യുന്നു...</string>
+    <string name="flashing">ഫ്ലാഷ് ചെയ്യുന്നു…</string>
     <string name="done">ചെയ്തു!</string>
     <string name="failure">പരാജയപ്പെട്ടു!</string>
-    <string name="hide_app_title">മജിസ്‌ക് ആപ്പ് മറയ്ക്കുന്നു...</string>
+    <string name="hide_app_title">മജിസ്‌ക് ആപ്പ് മറയ്ക്കുന്നു…</string>
     <string name="open_link_failed_toast">ലിങ്ക് തുറക്കാൻ ആപ്പൊന്നും കണ്ടെത്തിയില്ല</string>
     <string name="complete_uninstall">പൂർണ്ണമായും അൺഇൻസ്റ്റാൾ ചെയ്യുക</string>
     <string name="restore_img">ഇമേജുകൾ റിസ്റ്റോർ ചെയ്യുക</string>
@@ -214,7 +214,7 @@
     <string name="setup_fail">സെറ്റപ്പ് പരാജയപ്പെട്ടു</string>
     <string name="env_fix_title">കൂടുതൽ സജ്ജീകരണം ആവശ്യമാണ്</string>
     <string name="env_fix_msg">മജിസ്‌ക് ശരിയായി പ്രവർത്തിക്കാൻ നിങ്ങളുടെ ഉപകരണത്തിന് കൂടുതൽ സജ്ജീകരണം ആവശ്യമാണ്. നിങ്ങൾക്ക് തുടരാനും റീബൂട്ട് ചെയ്യാനും താൽപ്പര്യമുണ്ടോ?</string>
-    <string name="setup_msg">ഇൻവൈറൻമൻറ്റ് സജ്ജീകരണം പ്രവർത്തിക്കുന്നു...</string>
+    <string name="setup_msg">ഇൻവൈറൻമൻറ്റ് സജ്ജീകരണം പ്രവർത്തിക്കുന്നു…</string>
     <string name="unsupport_magisk_title">പിന്തുണയ്ക്കാത്ത മജിസ്‌ക് പതിപ്പ്</string>
     <string name="unsupport_magisk_msg">ആപ്പിന്റെ ഈ പതിപ്പ് %1$s-ൽ താഴെയുള്ള മജിസ്‌ക് പതിപ്പുകളെ പിന്തുണയ്‌ക്കുന്നില്ല.\n\nമജിസ്‌ക് ഇൻസ്റ്റാൾ ചെയ്തിട്ടില്ലെന്ന മട്ടിൽ ആപ്പ് പ്രവർത്തിക്കും, ദയവായി മജിസ്‌ക് എത്രയും വേഗം അപ്‌ഗ്രേഡ് ചെയ്യുക.</string>
     <string name="unsupport_general_title">അസാധാരണമായ നില</string>

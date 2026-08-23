@@ -85,6 +85,8 @@
     <string name="su_deny_toast">%1$s 已被拒绝超级用户权限</string>
     <string name="su_snack_grant">已授予 %1$s 超级用户权限</string>
     <string name="su_snack_deny">已拒绝 %1$s 超级用户权限</string>
+    <string name="granted">已授权</string>
+    <string name="denied">已拒绝</string>
     <string name="su_snack_notif_on">已启用 %1$s 的通知</string>
     <string name="su_snack_notif_off">已禁用 %1$s 的通知</string>
     <string name="su_snack_log_on">已启用对 %1$s 的日志记录</string>
@@ -107,6 +109,7 @@
     <string name="log_data_none">没有超级用户权限使用日志</string>
     <string name="log_data_magisk_none">没有 Magisk 日志</string>
     <string name="menuSaveLog">保存日志</string>
+    <string name="save_log_failed">保存日志失败</string>
     <string name="menuClearLog">清空日志</string>
     <string name="logs_cleared">日志已清空</string>
     <string name="pid">PID: %1$d</string>
@@ -136,6 +139,7 @@
     <string name="module_state_remove">移除</string>
     <string name="module_action">操作</string>
     <string name="module_state_restore">还原</string>
+    <string name="module_unavailable">模块 %1$s 不可用</string>
     <string name="module_state_hide">隐藏</string>
     <string name="module_state_reveal">再现</string>
     <string name="module_webui">WebUI</string>

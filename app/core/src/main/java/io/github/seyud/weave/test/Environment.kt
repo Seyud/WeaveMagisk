@@ -2,6 +2,7 @@ package io.github.seyud.weave.test
 
 import android.app.Notification
 import android.os.Build
+import androidx.annotation.ChecksSdkIntAtLeast
 import androidx.annotation.Keep
 import androidx.core.net.toUri
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -48,6 +49,7 @@ class Environment : BaseTest {
 
         // The kernel running on emulators < API 26 does not play well with
         // magic mount. Skip mount_test on those legacy platforms.
+        @ChecksSdkIntAtLeast(api = Build.VERSION_CODES.O)
         fun mount(): Boolean {
             return Build.VERSION.SDK_INT >= 26
         }
@@ -62,6 +64,7 @@ class Environment : BaseTest {
             return Build.VERSION.SDK_INT in 27..34
         }
 
+        @ChecksSdkIntAtLeast(api = Build.VERSION_CODES.O_MR1)
         fun shamiko(): Boolean {
             return Build.VERSION.SDK_INT >= 27
         }

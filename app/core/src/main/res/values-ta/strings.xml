@@ -12,7 +12,7 @@
     <!--Home-->
     <string name="no_connection">இணைப்பு கிடைக்கவில்லை</string>
     <string name="app_changelog">சேஞ்ச்லாக்</string>
-    <string name="loading">ஏற்றுகிறது...</string>
+    <string name="loading">ஏற்றுகிறது…</string>
     <string name="update">புதுப்பிப்பு</string>
     <string name="not_available">எதுவும் இல்லை</string>
     <string name="hide">பார்வையில் இருந்து மறைத்து வை</string>

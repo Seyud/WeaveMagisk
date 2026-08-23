@@ -1,21 +1,21 @@
 package io.github.seyud.weave.core.utils
 
-import android.annotation.TargetApi
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import android.os.Build
 import android.provider.Settings
 import androidx.activity.result.contract.ActivityResultContract
+import androidx.annotation.RequiresApi
+import androidx.core.net.toUri
 
 class RequestInstall : ActivityResultContract<Unit, Boolean>() {
 
-    @TargetApi(26)
+    @RequiresApi(26)
     override fun createIntent(context: Context, input: Unit): Intent {
         // This will only be called on API 26+
         return Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES)
-            .setData(Uri.parse("package:${context.packageName}"))
+            .setData("package:${context.packageName}".toUri())
     }
 
     override fun parseResult(resultCode: Int, intent: Intent?) =

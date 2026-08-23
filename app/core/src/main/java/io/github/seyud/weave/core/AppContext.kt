@@ -1,5 +1,6 @@
 package io.github.seyud.weave.core
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.Application
 import android.app.LocaleManager
@@ -29,7 +30,6 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.lang.ref.WeakReference
 import java.util.Locale
-import kotlin.system.exitProcess
 
 lateinit var AppApkPath: String
     private set
@@ -48,9 +48,12 @@ object AppContext : ContextWrapper(null),
     init {
         // Always log full stack trace with Timber
         Timber.plant(Timber.DebugTree())
-        Thread.setDefaultUncaughtExceptionHandler { _, e ->
+        // Log first, then hand over to the system's default crash handling,
+        // so crashes still go through the normal crash channel
+        val previousHandler = Thread.getDefaultUncaughtExceptionHandler()
+        Thread.setDefaultUncaughtExceptionHandler { t, e ->
             Timber.e(e)
-            exitProcess(1)
+            previousHandler?.uncaughtException(t, e)
         }
 
         Os.setenv("PATH", "${Os.getenv("PATH")}:/debug_ramdisk:/sbin", true)
@@ -76,6 +79,11 @@ object AppContext : ContextWrapper(null),
 
     override fun getApplicationContext() = application
 
+    // The APK manifest already declares android:localeConfig and per-app locales
+    // are handled natively via LocaleManager on 33+; Play Core is not used because
+    // the app is never installed as a split bundle, so this library-scope check
+    // does not apply
+    @SuppressLint("AppBundleLocaleChanges")
     fun attachApplication(app: Application) {
         application = app
         val base = app.baseContext
@@ -86,11 +94,7 @@ object AppContext : ContextWrapper(null),
         // applyOverrideConfiguration on the base context (ContextImpl), which merges the
         // locale into the context's configuration so new Resources inherit it.
         if (SDK_INT in 24..34 && isRunningAsStub) {
-            val dpCtx = if (SDK_INT >= Build.VERSION_CODES.N) {
-                base.createDeviceProtectedStorageContext()
-            } else {
-                base
-            }
+            val dpCtx = base.createDeviceProtectedStorageContext()
             val localeTag = dpCtx.getSharedPreferences(
                 "${base.packageName}_preferences", Context.MODE_PRIVATE
             ).getString("locale", "") ?: ""
@@ -99,10 +103,19 @@ object AppContext : ContextWrapper(null),
                 val config = Configuration()
                 config.setLocale(locale)
                 runCatching {
-                    org.lsposed.hiddenapibypass.HiddenApiBypass.invoke(
-                        Context::class.java, base,
-                        "applyOverrideConfiguration", config
-                    )
+                    if (SDK_INT >= Build.VERSION_CODES.P) {
+                        // Hidden API restrictions exist on 28+; bypass them
+                        org.lsposed.hiddenapibypass.HiddenApiBypass.invoke(
+                            Context::class.java, base,
+                            "applyOverrideConfiguration", config
+                        )
+                    } else {
+                        // Below 28 there is no hidden API enforcement, plain
+                        // reflection reaches ContextImpl's method directly
+                        Context::class.java
+                            .getMethod("applyOverrideConfiguration", Configuration::class.java)
+                            .invoke(base, config)
+                    }
                 }
             }
         }
@@ -141,14 +154,6 @@ object AppContext : ContextWrapper(null),
             appScope.launch(Dispatchers.IO) {
                 ProfileInstaller.writeProfile(this@AppContext)
             }
-        }
-    }
-
-    override fun createDeviceProtectedStorageContext(): Context {
-        return if (SDK_INT >= Build.VERSION_CODES.N) {
-            super.createDeviceProtectedStorageContext()
-        } else {
-            this
         }
     }
 

@@ -238,4 +238,20 @@
     <string name="reboot_apply_change">Riavvia per applicare le modifiche</string>
     <string name="restore_app_confirmation">L\'app nascosta verrà sostituita con la versione originale. Sei sicuro di voler continuare?</string>
 
+    <string name="close">Chiudi</string>
+    <string name="denied">Negato</string>
+    <string name="done_action">Azione di %1$s completata</string>
+    <string name="download_dialog_msg">Immagine OTA completa o immagine di fabbrica</string>
+    <string name="download_dialog_title">Inserisci l\\\'URL dell\\\'immagine</string>
+    <string name="download_patch_file">Scarica e applica una patch a un file</string>
+    <string name="granted">Concesso</string>
+    <string name="module_action">Azione</string>
+    <string name="reboot_safe_mode">Modalità provvisoria</string>
+    <string name="restrict">Limita</string>
+    <string name="selinux_context">Contesto SELinux: %s</string>
+    <string name="settings_su_restrict_summary">Limita per impostazione predefinita le nuove app che richiedono accesso root. Attenzione: ciò causerà malfunzionamenti nella maggior parte delle app. Non abilitare a meno che tu non sappia cosa stai facendo.</string>
+    <string name="settings_su_restrict_title">Limita capacità root</string>
+    <string name="settings_update_debug">Debug</string>
+    <string name="supp_group">Gruppo supplementare: %s</string>
+    <string name="target_pid">PID target: %s</string>
 </resources>

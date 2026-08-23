@@ -46,7 +46,7 @@
     <string name="setup_title">অতিরিক্ত সেটআপ</string>
     <string name="select_patch_file">একটি ফাইল নির্বাচন করুন এবং প্যাচ করুন</string>
     <string name="patch_file_msg">একটি কাঁচা চিত্র (*.img) বা একটি ODIN টারফাইল (*.tar) নির্বাচন করুন</string>
-    <string name="reboot_delay_toast">৫ সেকেন্ডের মধ্যে রিবুট হচ্ছে...</string>
+    <string name="reboot_delay_toast">৫ সেকেন্ডের মধ্যে রিবুট হচ্ছে…</string>
     <string name="flash_screen_title">স্থাপন</string>
 
     <!--Superuser-->

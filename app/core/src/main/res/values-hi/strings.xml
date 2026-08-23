@@ -46,7 +46,7 @@
     <string name="setup_title">अतिरिक्त सेटअप</string>
     <string name="select_patch_file">एक फ़ाइल का चयन और पैच करें</string>
     <string name="patch_file_msg">एक रॉ छवि (* .img) या एक ODIN tarfile (* .tar) का चयन करें</string>
-    <string name="reboot_delay_toast">5 सेकंड में रिबूट हो रहा है...</string>
+    <string name="reboot_delay_toast">5 सेकंड में रिबूट हो रहा है…</string>
     <string name="flash_screen_title">इंस्टॉलेशन</string>
 
     <!--Superuser-->
@@ -201,20 +201,20 @@
     <string name="download">डाउनलोड</string>
     <string name="reboot">रीबूट</string>
     <string name="release_notes">रिलीज नोट्स</string>
-    <string name="flashing">फ़्लैश हो रहा है...</string>
+    <string name="flashing">फ़्लैश हो रहा है…</string>
     <string name="done">सफल हुआ!</string>
     <string name="failure">असफल हुआ !</string>
     <string name="hide_app_title">मैजिस्क ऐप अब छिप रहा है…</string>
     <string name="open_link_failed_toast">लिंक खोलने के लिए कोई एप्लिकेशन नहीं मिला</string>
     <string name="complete_uninstall">पूर्ण रूप से अनइंस्टॉल करें</string>
     <string name="restore_img">इमेज रिस्टोर करें</string>
-    <string name="restore_img_msg">रिस्टोर हो रहा है...</string>
+    <string name="restore_img_msg">रिस्टोर हो रहा है…</string>
     <string name="restore_done">रिस्टोर सफल हुआ!</string>
     <string name="restore_fail">स्टॉक बैकअप मौजूद नहीं है!</string>
     <string name="setup_fail">सेटअप असफल हुआ</string>
     <string name="env_fix_title">अतिरिक्त सेटअप की आवश्यकता</string>
     <string name="env_fix_msg">मैजिस्क के ठीक से काम करने के लिए आपके डिवाइस को अतिरिक्त सेटअप की आवश्यकता है। क्या आप आगे बढ़ना और रिबूट करना चाहते हैं?</string>
-    <string name="setup_msg">वातावरण सेटअप चल रहा है...</string>
+    <string name="setup_msg">वातावरण सेटअप चल रहा है…</string>
     <string name="unsupport_magisk_title">असमर्थित मैजिस्क संस्करण</string>
     <string name="unsupport_magisk_msg">ऐप का यह संस्करण %1$s से कम के मैजिस्क संस्करणों का समर्थन नहीं करता है।\n\nऐप ऐसा व्यवहार करेगा जैसे कोई मैजिस्क इंस्टॉल नहीं है, कृपया जितनी जल्दी हो सके मैजिस्क को अपग्रेड करें।</string>
     <string name="unsupport_general_title">असामान्य अवस्था</string>

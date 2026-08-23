@@ -11,8 +11,6 @@
     <string name="denylist">قائمة الحظر</string>
 
     <!--Home-->
-    <string name="magisk">Magisk</string>
-    <string name="zygisk">Zygisk</string>
     <string name="no_connection">لا يوجد اتصال بالإنترنت</string>
     <string name="app_changelog">سجل التغييرات</string>
     <string name="loading">جارٍ التحميل…</string>

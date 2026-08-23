@@ -1,12 +1,12 @@
 package io.github.seyud.weave.core
 
 import android.annotation.SuppressLint
-import android.annotation.TargetApi
 import android.app.Notification
 import android.app.job.JobInfo
 import android.app.job.JobParameters
 import android.app.job.JobScheduler
 import android.content.Context
+import androidx.annotation.RequiresApi
 import androidx.core.content.getSystemService
 import io.github.seyud.weave.core.base.BaseJobService
 import io.github.seyud.weave.core.di.ServiceLocator
@@ -22,7 +22,7 @@ class JobService : BaseJobService() {
 
     private var mSession: Session? = null
 
-    @TargetApi(value = 34)
+    @RequiresApi(34)
     inner class Session(
         private var params: JobParameters
     ) : DownloadSession {
@@ -55,7 +55,7 @@ class JobService : BaseJobService() {
 
     override fun onStopJob(params: JobParameters?) = false
 
-    @TargetApi(value = 34)
+    @RequiresApi(34)
     private fun downloadFile(params: JobParameters): Boolean {
         params.transientExtras.classLoader = Subject::class.java.classLoader
         val subject = params.transientExtras

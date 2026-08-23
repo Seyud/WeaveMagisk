@@ -28,38 +28,6 @@ interface LocaleSetting {
     fun setLocale(tag: String)
     fun updateResource(res: Resources)
 
-    private class Api23Impl : LocaleSetting {
-
-        private val systemLocale: Locale = Locale.getDefault()
-
-        override var appLocale: Locale? = null
-        override var currentLocale: Locale = systemLocale
-
-        init {
-            setLocale(Config.locale)
-        }
-
-        override fun setLocale(tag: String) {
-            val locale = when {
-                tag.isEmpty() -> null
-                else -> Locale.forLanguageTag(tag)
-            }
-            currentLocale = locale ?: systemLocale
-            appLocale = locale
-            Locale.setDefault(currentLocale)
-            updateResource(AppContext.resources)
-            AppContext.foregroundActivity?.recreate()
-        }
-
-        @Suppress("DEPRECATION")
-        override fun updateResource(res: Resources) {
-            val config = res.configuration
-            config.setLocale(currentLocale)
-            res.updateConfiguration(config, null)
-        }
-    }
-
-    @RequiresApi(24)
     private class Api24Impl : LocaleSetting {
 
         private val systemLocaleList = LocaleList.getDefault()
@@ -84,7 +52,9 @@ interface LocaleSetting {
             AppContext.foregroundActivity?.recreate()
         }
 
-        @Suppress("DEPRECATION")
+        // See the note on the companion object: locale splits / Play Core do
+        // not apply to this sideloaded single-APK app
+        @SuppressLint("AppBundleLocaleChanges", "DEPRECATION")
         override fun updateResource(res: Resources) {
             Locale.setDefault(currentLocale)
             val config = res.configuration
@@ -120,7 +90,11 @@ interface LocaleSetting {
         val tags: Array<String>
     )
 
-    @SuppressLint("NewApi")
+    // The APK manifest already declares android:localeConfig and per-app locales
+    // are handled natively via LocaleManager on 33+; Play Core is not used because
+    // the app is never installed as a split bundle, so this library-scope check
+    // does not apply
+    @SuppressLint("NewApi", "AppBundleLocaleChanges")
     companion object {
         val available: AppLocaleList by lazy {
             val names = ArrayList<String>()
@@ -191,8 +165,6 @@ interface LocaleSetting {
             available
             if (useLocaleManager) {
                 Api33Impl()
-            } else if (Build.VERSION.SDK_INT <= 23) {
-                Api23Impl()
             } else {
                 Api24Impl()
             }

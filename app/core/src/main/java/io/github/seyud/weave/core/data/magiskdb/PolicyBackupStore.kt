@@ -1,6 +1,7 @@
 package io.github.seyud.weave.core.data.magiskdb
 
 import android.content.Context
+import androidx.core.content.edit
 import io.github.seyud.weave.core.AppContext
 import io.github.seyud.weave.core.ktx.deviceProtectedContext
 import io.github.seyud.weave.core.model.su.SuPolicy
@@ -21,7 +22,9 @@ object PolicyBackupStore {
         val entries = policies.joinToString(";") { p ->
             "${p.uid}:${p.policy}:${p.remain}:${if (p.logging) 1 else 0}:${if (p.notification) 1 else 0}"
         }
-        prefs().edit().putString(KEY_POLICIES, entries).commit()
+        // commit() on purpose: the backup must be durable before the daemon's
+        // early-boot prune can wipe the policy database
+        prefs().edit(commit = true) { putString(KEY_POLICIES, entries) }
     }
 
     fun backupSingle(policy: SuPolicy) {

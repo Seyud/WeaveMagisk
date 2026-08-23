@@ -22,6 +22,7 @@ import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.core.content.getSystemService
+import androidx.core.graphics.createBitmap
 import io.github.seyud.weave.core.integration.AppIconManager
 import io.github.seyud.weave.core.utils.LocaleSetting
 import io.github.seyud.weave.core.utils.RootUtils
@@ -36,7 +37,7 @@ fun Context.getBitmap(id: Int): Bitmap {
     if (SDK_INT >= Build.VERSION_CODES.O && drawable is AdaptiveIconDrawable) {
         drawable = LayerDrawable(arrayOf(drawable.background, drawable.foreground))
     }
-    val bitmap = Bitmap.createBitmap(
+    val bitmap = createBitmap(
         drawable.intrinsicWidth, drawable.intrinsicHeight,
         Bitmap.Config.ARGB_8888
     )
@@ -47,9 +48,7 @@ fun Context.getBitmap(id: Int): Bitmap {
 }
 
 val Context.deviceProtectedContext: Context get() =
-    if (SDK_INT >= Build.VERSION_CODES.N) {
-        createDeviceProtectedStorageContext()
-    } else { this }
+    createDeviceProtectedStorageContext()
 
 fun Context.cachedFile(name: String) = File(cacheDir, name)
 

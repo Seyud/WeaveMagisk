@@ -1,5 +1,6 @@
 package io.github.seyud.weave.core.utils
 
+import android.annotation.SuppressLint
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
@@ -34,6 +35,12 @@ object InstalledPackageLoader {
         )
     }
 
+    // QUERY_ALL_PACKAGES is declared in the :shared manifest (merged into the
+    // final app); a library-module lint run cannot see the merged result, and
+    // the superuser list genuinely needs the full package inventory anyway.
+    // The root path above is the primary source; this fallback covers
+    // non-root / degraded modes where partial visibility is acceptable.
+    @SuppressLint("QueryPermissionsNeeded")
     fun loadPackages(
         flags: Int,
         packageManager: PackageManager = AppContext.packageManager,

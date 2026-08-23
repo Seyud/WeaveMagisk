@@ -215,7 +215,7 @@
     <string name="close">داخستن</string>
     <string name="release_notes">نێبینییەکان</string>
     <string name="flashing">فلاش کردن</string>
-    <string name="running">کار کردن...</string>
+    <string name="running">کار کردن…</string>
     <string name="done">تەواو!</string>
     <string name="done_action">کارکردنی %1$s تەواو بوو</string>
     <string name="failure">Failed!</string>
@@ -230,9 +230,9 @@
     <string name="env_fix_title">پێویستی بە ڕێکخستنی زیاترە</string>
     <string name="env_fix_msg">مۆبایلەکەت پێویستی بە ڕێکخستنی زیاترە، ئایا ئەتەوێت بەردەوام بیت و ڕێستارتی بکەیتەوە؟</string>
     <string name="env_full_fix_msg"> پێویستە دوبارە ماجیسک دابگریتەوە بۆ ئەوەی بەباشی کاربکات تکایە ماجیسک دابگرەوە لەناو ئەپەکە خۆی چونکە لە ڕیکەڤەرییەوە ناتوانرێ زانیاری تەواو لەسەر ئامێرەکە دەستبخرێت </string>
-    <string name="setup_msg">دەستپێکردن....</string>
+    <string name="setup_msg">دەستپێکردن….</string>
     <string name="unsupport_magisk_title">وەشانی ماجیسک پاڵپشتینەکراوە</string>
-    <string name="unsupport_magisk_msg">وەشانی ماجیسکەکەت زۆر کۆنە وەک ئەوە وایە هەر نەبێت، تکایە نوێی بکەوە بە زوترین کات</string>
+    <string name="unsupport_magisk_msg">وەشانی ماجیسکەکەت لە %1$s کۆنترۆیە و وەک ئەوە وایە هەر نەبێت، تکایە نوێی بکەوە بە زوترین کات</string>
     <string name="unsupport_general_title">باری نائاسایی</string>
     <string name="unsupport_system_app_msg">ئەم ئەپە وەکو ئەپی سیستەم کارناکات، تکایە بیگۆڕەوە بۆ ئەپی ئاسایی</string>
     <string name="unsupport_other_su_msg"> \"su\" binary یەکی بێگانە دۆزرایەوە، تکایە جگە لە ماجیسک ئەپی تر بەکارمەهێنە بۆ ڕۆت کردن  </string>

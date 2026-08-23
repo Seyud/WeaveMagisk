@@ -212,7 +212,7 @@
     <string name="download">Stiahnuť</string>
     <string name="reboot">Reštartovať</string>
     <string name="release_notes">Poznámky k vydaniu</string>
-    <string name="flashing">Flashovanie...</string>
+    <string name="flashing">Flashovanie…</string>
     <string name="done">Hotovo!</string>
     <string name="failure">Zlyhalo!</string>
     <string name="hide_app_title">Skrýva sa aplikácia Magisk…</string>

@@ -205,7 +205,7 @@
     <string name="download">Endir</string>
     <string name="reboot">Yenidən başlat</string>
     <string name="release_notes">Yeniliklər</string>
-    <string name="flashing">Flashlanır...</string>
+    <string name="flashing">Flashlanır…</string>
     <string name="done">Bitdi!</string>
     <string name="failure">Alınmadı!</string>
     <string name="hide_app_title">Magisk tətbiqi gizlədilir…</string>

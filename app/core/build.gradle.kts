@@ -35,6 +35,16 @@ android {
     compileOptions {
         isCoreLibraryDesugaringEnabled = true
     }
+
+    lint {
+        // 与 :apk 的 setupAppCommon 保持同一翻译策略：本项目的翻译由社区
+        // /上游同步流入，缺失语言回退英文是既定行为，不在此翻译。
+        disable += "MissingTranslation"
+        // TrustAllX509TrustManager 仅命中 bcpkix 依赖内部的 JDK 类，
+        // 不是本项目代码，无法在源码侧修复
+        disable += "TrustAllX509TrustManager"
+        checkReleaseBuilds = false
+    }
 }
 
 dependencies {

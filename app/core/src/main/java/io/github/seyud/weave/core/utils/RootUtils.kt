@@ -1,5 +1,6 @@
 package io.github.seyud.weave.core.utils
 
+import android.annotation.SuppressLint
 import android.app.ActivityManager
 import android.content.ComponentName
 import android.content.Intent
@@ -104,6 +105,10 @@ class RootUtils(stub: Any?) : RootService() {
         return true
     }
 
+    // Deliberate reflection on a hidden PackageManager API: this code runs with
+    // root privileges where the call succeeds, and any failure (e.g. the method
+    // being blocked on some builds) degrades to an empty list via the catch below
+    @SuppressLint("BlockedPrivateApi")
     private fun getInstalledApplicationsAsUser(flags: Int, userId: Int): List<ApplicationInfo> {
         return try {
             val pm: PackageManager = packageManager

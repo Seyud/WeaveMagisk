@@ -246,4 +246,9 @@
     <string name="app_not_found">Није пронађена апликација за ову акцију</string>
     <string name="reboot_apply_change">Поново покрени да примениш измене</string>
     <string name="restore_app_confirmation">Ово ће вратити скривену апликацију на оригиналну. Да ли стварно то желите?</string>
+    <string name="denied">Одбијено</string>
+    <string name="download_dialog_msg">Потпуна OTA слика или фабричка слика</string>
+    <string name="download_dialog_title">Унеси URL слике</string>
+    <string name="download_patch_file">Преузми и patch-уј фајл</string>
+    <string name="granted">Одобрено</string>
 </resources>

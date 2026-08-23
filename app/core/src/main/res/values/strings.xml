@@ -11,8 +11,10 @@
     <string name="denylist">DenyList</string>
 
     <!--Home-->
-    <string name="magisk">Magisk</string>
-    <string name="zygisk">Zygisk</string>
+    <!--Brand names, must never be translated (kept translatable=false like
+        upstream's resources.xml to avoid MissingTranslation noise)-->
+    <string name="magisk" translatable="false">Magisk</string>
+    <string name="zygisk" translatable="false">Zygisk</string>
     <string name="no_connection">No connection available</string>
     <string name="app_changelog">Changelog</string>
     <string name="loading">Loading…</string>
