@@ -150,9 +150,6 @@ parse_args() {
   echo emu_args=\"$emu_args\"
   echo OPTIND=$OPTIND
 
-  if [ -n "$AVD_TEST_LOG" ]; then
-    echo export AVD_TEST_LOG=1
-  fi
   # Dump local variables
   dump_vars $return_vals
 }
