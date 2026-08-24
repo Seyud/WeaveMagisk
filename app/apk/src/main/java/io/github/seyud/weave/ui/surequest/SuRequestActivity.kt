@@ -27,6 +27,7 @@ import io.github.seyud.weave.core.di.ServiceLocator
 import io.github.seyud.weave.core.su.SuCallbackHandler
 import io.github.seyud.weave.core.su.SuCallbackHandler.REQUEST
 import io.github.seyud.weave.dialog.SuRequestDialog
+import io.github.seyud.weave.ui.settings.WhitelistSuDenyListWatcher
 import io.github.seyud.weave.ui.theme.WeaveMagiskTheme
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -76,6 +77,10 @@ class SuRequestActivity : ComponentActivity(), UntrackedActivity, IActivityExten
         extension.onCreate(savedInstanceState)
 
         super.onCreate(savedInstanceState)
+
+        // 白名单模式（本地 DenyList 同步）的 su 策略对账观察者，幂等懒启动。
+        // 弹窗可能独立于主界面启动，这里保证观察者已运行
+        WhitelistSuDenyListWatcher.start()
 
         // 设置无障碍服务委托（点击劫持防护启用时）
         if (Config.suTapjack) {

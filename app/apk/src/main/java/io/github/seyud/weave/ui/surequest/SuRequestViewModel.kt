@@ -26,6 +26,9 @@ import io.github.seyud.weave.core.model.su.SuPolicy.Companion.DENY
 import io.github.seyud.weave.core.su.SuRequestHandler
 import io.github.seyud.weave.dialog.SuRequestDialog
 import io.github.seyud.weave.arch.BaseViewModel
+import io.github.seyud.weave.ui.settings.WhitelistModeDenyListCoordinator
+import io.github.seyud.weave.ui.settings.isLocalWhitelistDenyListSyncActive
+import io.github.seyud.weave.ui.superuser.SuperuserModeSyncCoordinator
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -265,8 +268,30 @@ class SuRequestViewModel(
 
         viewModelScope.launch {
             handler.respond(action, Config.Value.TIMEOUT_LIST[pos])
+            syncWhitelistDenyListAfterRespond(action)
             // 响应后结束 Activity
             _shouldFinish.value = true
+        }
+    }
+
+    /**
+     * 白名单模式（本地 DenyList 同步）下，按 uid 即时同步排除列表：
+     * 授权 → 移出 DenyList，否则该应用进程被 unmount 拿不到 root；
+     * 拒绝 → 加回 DenyList，恢复隐藏。
+     * 弹窗"仅一次"授权不落库也不发事件，但当前请求已通过 FIFO 放行，
+     * 且策略表未变化，无需对账。自动允许/拒绝路径由 WhitelistSuDenyListWatcher 兜底。
+     */
+    private suspend fun syncWhitelistDenyListAfterRespond(action: Int) = withContext(Dispatchers.IO) {
+        runCatching {
+            val modeSync = SuperuserModeSyncCoordinator()
+            if (!isLocalWhitelistDenyListSyncActive(modeSync)) return@runCatching
+            val coordinator = WhitelistModeDenyListCoordinator()
+            val uid = handler.requestUid
+            if (action == ALLOW) {
+                coordinator.removePackagesForUid(uid)
+            } else {
+                coordinator.ensurePackagesSyncedForUid(uid)
+            }
         }
     }
 

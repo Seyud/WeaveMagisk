@@ -28,6 +28,10 @@ class SuRequestHandler(
     lateinit var pkgInfo: PackageInfo
         private set
 
+    /** 发起 su 请求的应用 uid，仅在 [start] 成功后可访问 */
+    val requestUid: Int
+        get() = policy.uid
+
     // Return true to indicate undetermined policy, require user interaction
     suspend fun start(intent: Intent): Boolean {
         if (!init(intent))

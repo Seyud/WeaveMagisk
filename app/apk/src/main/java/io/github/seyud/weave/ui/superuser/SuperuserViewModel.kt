@@ -23,6 +23,8 @@ import io.github.seyud.weave.dialog.SuperuserRevokeDialog
 import io.github.seyud.weave.events.AuthEvent
 import io.github.seyud.weave.core.utils.InstalledPackageLoader
 import io.github.seyud.weave.core.utils.RootUtils
+import io.github.seyud.weave.ui.settings.WhitelistModeDenyListCoordinator
+import io.github.seyud.weave.ui.settings.isLocalWhitelistDenyListSyncActive
 import io.github.seyud.weave.utils.TextHolder
 import io.github.seyud.weave.utils.asText
 import kotlinx.coroutines.CancellationException
@@ -132,6 +134,7 @@ class SuperuserViewModel internal constructor(
     private val db: SuperuserPolicyStore,
     private val modeSync: SuperuserModeSyncCoordinator = SuperuserModeSyncCoordinator(),
     private val loadConfig: SuperuserLoadConfig = SuperuserLoadConfig(),
+    private val denyListCoordinator: WhitelistModeDenyListCoordinator = WhitelistModeDenyListCoordinator(),
 ) : AsyncLoadViewModel() {
 
     sealed interface SuperuserEvent {
@@ -213,6 +216,10 @@ class SuperuserViewModel internal constructor(
         allPolicies.firstOrNull { policyKey(it.item.uid, it.packageName) == key }
 
     private fun currentSuperuserListMode(): Int = normalizeSuperuserListMode(Config.suListMode)
+
+    /** 当前是否处于"本地 DenyList 模拟白名单"状态（白名单模式且 Zygisk Next 未运行） */
+    private suspend fun localWhitelistDenyListSyncActive(): Boolean =
+        isLocalWhitelistDenyListSyncActive(modeSync)
 
     fun setQuery(query: String) {
         _uiState.update { it.copy(query = query) }
@@ -604,6 +611,8 @@ class SuperuserViewModel internal constructor(
 
     private suspend fun revokeEntry(entry: PolicyEntry) {
         db.delete(entry.item.uid)
+        // 通知外部（含白名单 DenyList 对账观察者）策略已变更
+        SuEvents.notifyPolicyChanged()
         if (isWhitelistMode(loadedListMode)) {
             entry.item.policy = SuPolicy.QUERY
             entry.item.remain = 0
@@ -613,6 +622,13 @@ class SuperuserViewModel internal constructor(
             allPolicies = allPolicies.filterNot { it.item.uid == entry.item.uid }
         }
         publishFilteredPolicies()
+
+        // 白名单本地同步：撤销后把应用加回 DenyList，恢复对它的隐藏
+        if (localWhitelistDenyListSyncActive()) {
+            runCatching {
+                denyListCoordinator.ensurePackagesSyncedForUid(entry.item.uid)
+            }
+        }
     }
 
     private fun updateNotify(entry: PolicyEntry) {
@@ -643,8 +659,8 @@ class SuperuserViewModel internal constructor(
         }
     }
 
-    private suspend fun verifyGrant(uid: Int): Boolean {
-        return withContext(Dispatchers.IO) {
+    private suspend fun verifyGrant(uid: Int, packageName: String): Boolean {
+        val shellVerified = withContext(Dispatchers.IO) {
             try {
                 val result = com.topjohnwu.superuser.Shell.cmd("su $uid -c id").await()
                 result.isSuccess && result.out.any { it.contains("uid=$uid") }
@@ -652,6 +668,11 @@ class SuperuserViewModel internal constructor(
                 false
             }
         }
+        if (!shellVerified) return false
+        // 白名单本地同步下，管理器 shell 验证通过不代表目标应用可用：
+        // 若该包仍在 DenyList 中，其进程会被 unmount，实际拿不到 root
+        if (!localWhitelistDenyListSyncActive()) return true
+        return runCatching { !denyListCoordinator.hasEntriesForPackage(packageName) }.getOrDefault(true)
     }
 
     private fun updatePolicy(entry: PolicyEntry, policy: Int) {
@@ -667,6 +688,15 @@ class SuperuserViewModel internal constructor(
                     entry.item.remain = 0
                     db.update(entry.item)
                     publishFilteredPolicies()
+                    // 通知外部（含白名单 DenyList 对账观察者）策略已变更
+                    SuEvents.notifyPolicyChanged()
+                    // 白名单本地同步：授权即时移出 DenyList，
+                    // 否则该应用进程被 unmount，"已授权却拿不到 root"
+                    if (policy >= SuPolicy.ALLOW && localWhitelistDenyListSyncActive()) {
+                        runCatching {
+                            denyListCoordinator.removePackagesForUid(entry.item.uid)
+                        }
+                    }
                 }
 
                 val res = when {
@@ -680,9 +710,18 @@ class SuperuserViewModel internal constructor(
                 if (policy == SuPolicy.ALLOW) {
                     val uid = entry.item.uid
                     val appName = entry.appName
-                    val verified = verifyGrant(uid)
+                    val whitelistSync = localWhitelistDenyListSyncActive()
+                    val verified = verifyGrant(uid, entry.packageName)
                     if (verified) {
-                        _event.trySend(SuperuserEvent.ShowSnackbar(R.string.su_verify_success.asText(appName)))
+                        _event.trySend(
+                            SuperuserEvent.ShowSnackbar(
+                                message = (if (whitelistSync) {
+                                    R.string.su_verify_success_restart
+                                } else {
+                                    R.string.su_verify_success
+                                }).asText(appName),
+                            )
+                        )
                     } else {
                         _event.trySend(
                             SuperuserEvent.ShowSnackbar(
@@ -692,7 +731,13 @@ class SuperuserViewModel internal constructor(
                                 onActionPerformed = {
                                     viewModelScope.launch {
                                         db.update(entry.item)
-                                        val retryResult = verifyGrant(uid)
+                                        // 白名单本地同步下失败多为 DenyList 残留，重试先做定向清理
+                                        if (whitelistSync) {
+                                            runCatching {
+                                                denyListCoordinator.removePackagesForUid(uid)
+                                            }
+                                        }
+                                        val retryResult = verifyGrant(uid, entry.packageName)
                                         val retryMsg = if (retryResult)
                                             R.string.su_verify_success else R.string.su_verify_failed
                                         _event.trySend(SuperuserEvent.ShowSnackbar(retryMsg.asText(appName)))

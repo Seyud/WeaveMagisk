@@ -79,6 +79,7 @@ import io.github.seyud.weave.ui.module.ModuleInstallTarget
 import io.github.seyud.weave.ui.module.ModuleViewModel
 import io.github.seyud.weave.ui.module.state.copyModuleDocumentsToCache
 import io.github.seyud.weave.ui.settings.SettingsViewModel
+import io.github.seyud.weave.ui.settings.WhitelistSuDenyListWatcher
 import io.github.seyud.weave.ui.superuser.SuperuserViewModel
 import io.github.seyud.weave.ui.theme.LocalEnableBlur
 import io.github.seyud.weave.ui.theme.LocalEnableFloatingBottomBar
@@ -191,6 +192,9 @@ class MainActivity : ComponentActivity(), IActivityExtension, ViewModelHolder, W
 
         super.onCreate(savedInstanceState)
         extension.onCreate(savedInstanceState)
+
+        // 白名单模式（本地 DenyList 同步）的 su 策略对账观察者，幂等懒启动
+        WhitelistSuDenyListWatcher.start()
 
         // The core-splashscreen library injects a LinearLayout with fitsSystemWindows="true"
         // into the DecorView even when installSplashScreen() is not called (via theme attrs).
