@@ -40,6 +40,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 fun ModuleScreen(
     viewModel: ModuleViewModel,
     contentBottomPadding: Dp,
+    isActive: Boolean,
     onInstallModuleFromLocal: (List<Uri>) -> Unit,
     onOpenRepo: () -> Unit,
     onRunAction: (String, String) -> Unit,
@@ -99,7 +100,11 @@ fun ModuleScreen(
         }
     }
 
-    LaunchedEffect(Unit) {
+    // 对齐上游 Magisk c578a963（apk-ng）：HorizontalPager 预渲染所有 tab 时，
+    // LaunchedEffect(Unit) 只在首次组合执行一次；改为每次成为当前页时重新
+    // 恢复排序偏好并加载，保证切回模块页时列表状态最新。
+    LaunchedEffect(isActive) {
+        if (!isActive) return@LaunchedEffect
         viewModel.initializePreferences()
         viewModel.startLoading()
     }

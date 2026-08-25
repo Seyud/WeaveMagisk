@@ -791,6 +791,7 @@ private fun MainTabScreen(
                     0 -> if (isCurrentPage || contentReady) HomeScreen(
                         viewModel = homeViewModel,
                         contentBottomPadding = contentBottomPadding,
+                        isActive = isCurrentPage,
                         onNavigateToInstall = {
                             navigator.push(Route.Install)
                         },
@@ -811,6 +812,7 @@ private fun MainTabScreen(
                     2 -> if (isCurrentPage || contentReady) ModuleScreen(
                         viewModel = moduleViewModel,
                         contentBottomPadding = contentBottomPadding,
+                        isActive = isCurrentPage,
                         onInstallModuleFromLocal = { uris ->
                             if (uris.isNotEmpty()) {
                                 navigator.push(Route.Flash(Const.Value.FLASH_ZIP, uris.map(Uri::toString)))

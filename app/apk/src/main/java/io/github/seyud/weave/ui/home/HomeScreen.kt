@@ -61,6 +61,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 fun HomeScreen(
     viewModel: HomeViewModel,
     contentBottomPadding: Dp,
+    isActive: Boolean,
     onNavigateToInstall: () -> Unit,
     onNavigateToUninstall: () -> Unit,
     onNavigateToAbout: () -> Unit,
@@ -71,7 +72,6 @@ fun HomeScreen(
     val configuration = LocalConfiguration.current
     val homeLayoutMode = LocalHomeLayoutMode.current
     val isWeavskHome = homeLayoutMode == Config.Value.HOME_LAYOUT_WEAVSK
-    var hasStartedLoading by rememberSaveable { mutableStateOf(false) }
     var isMagiskCardExpanded by rememberSaveable { mutableStateOf(false) }
     var isManagerCardExpanded by rememberSaveable { mutableStateOf(false) }
     var isSupportCardExpanded by rememberSaveable { mutableStateOf(false) }
@@ -104,11 +104,11 @@ fun HomeScreen(
         }
     }
 
-    LaunchedEffect(hasStartedLoading) {
-        if (!hasStartedLoading) {
-            hasStartedLoading = true
-            viewModel.startLoading()
-        }
+    // 对齐上游 Magisk c578a963（apk-ng）：HorizontalPager 预渲染所有 tab 时，
+    // 一次性加载在重新进入本页时不会重跑；改为随「当前页」状态触发，
+    // 保证切换更新渠道（resetUpdate）后回到主页能重新拉取 changelog。
+    LaunchedEffect(isActive) {
+        if (isActive) viewModel.startLoading()
     }
 
     val scope = rememberCoroutineScope()
