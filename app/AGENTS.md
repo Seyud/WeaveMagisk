@@ -38,3 +38,5 @@ Run from the `app/` directory (or use `./build.py <...>` from the repo root):
 - **Run Lint:** `./gradlew lint`
 - **Run Unit Tests:** `./gradlew test`
 - **Clean Artifacts:** `./gradlew clean`
+
+> **Mandatory lint check:** after **any** change under `app/` (Kotlin/Java/resources/Gradle files), run Android lint for the affected modules before concluding — e.g. `./gradlew :apk:lint :core:lint`, or full `./gradlew lint` when multiple/unspecified modules are touched. A successful compile alone is not sufficient verification.
