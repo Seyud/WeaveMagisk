@@ -140,7 +140,7 @@ internal fun ModuleScreenTopBar(
                             }
                         ),
                 ) {
-                    SearchBarFake(uiSearchStatus.label, dynamicTopPadding)
+                    SearchBarFake(uiSearchStatus.label, searchBarTopPadding = dynamicTopPadding)
                 }
             },
             actions = {

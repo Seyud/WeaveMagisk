@@ -38,7 +38,6 @@ import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -162,14 +161,15 @@ data class SearchStatus(
 @Composable
 fun SearchStatus.SearchBox(
     onSearchStatusChange: (SearchStatus) -> Unit,
+    modifier: Modifier = Modifier,
     collapseBar: @Composable (SearchStatus, Dp, PaddingValues) -> Unit = { searchStatus, topPadding, innerPadding ->
-        SearchBarFake(searchStatus.label, topPadding, innerPadding)
+        SearchBarFake(searchStatus.label, searchBarTopPadding = topPadding, innerPadding = innerPadding)
     },
     searchBarTopPadding: Dp = 12.dp,
     contentPadding: PaddingValues = PaddingValues(0.dp),
     blurBackdrop: LayerBackdrop? = null,
     renderCollapsedBar: Boolean = true,
-    content: @Composable (MutableState<Dp>) -> Unit
+    content: @Composable (Dp) -> Unit
 ) {
     val searchStatus = this
     val density = LocalDensity.current
@@ -212,7 +212,7 @@ fun SearchStatus.SearchBox(
             collapseBar(searchStatus, searchBarTopPadding, contentPadding)
         }
     }
-    Box {
+    Box(modifier = modifier) {
         AnimatedVisibility(
             visible = searchStatus.shouldCollapsed(),
             enter = fadeIn(tween(300, easing = LinearOutSlowInEasing)) + slideInVertically(
@@ -222,7 +222,7 @@ fun SearchStatus.SearchBox(
                 tween(300, easing = LinearOutSlowInEasing)
             ) { -offsetY.intValue }
         ) {
-            content(boxHeight)
+            content(boxHeight.value)
         }
     }
 }
@@ -230,9 +230,10 @@ fun SearchStatus.SearchBox(
 @Composable
 fun SearchStatus.SearchPager(
     onSearchStatusChange: (SearchStatus) -> Unit,
+    modifier: Modifier = Modifier,
     defaultResult: @Composable () -> Unit,
     expandBar: @Composable (SearchStatus, (SearchStatus) -> Unit, Dp) -> Unit = { searchStatus, onStatusChange, padding ->
-        SearchBar(searchStatus, onStatusChange, padding)
+        SearchBar(searchStatus, onStatusChange, searchBarTopPadding = padding)
     },
     searchBarTopPadding: Dp = 12.dp,
     resultModifier: Modifier = Modifier,
@@ -256,7 +257,7 @@ fun SearchStatus.SearchPager(
     )
 
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .zIndex(5f)
             .drawBehind {
@@ -350,6 +351,7 @@ fun SearchStatus.SearchPager(
 fun SearchBar(
     searchStatus: SearchStatus,
     onSearchStatusChange: (SearchStatus) -> Unit,
+    modifier: Modifier = Modifier,
     searchBarTopPadding: Dp = 12.dp,
 ) {
     val focusRequester = remember { FocusRequester() }
@@ -388,7 +390,7 @@ fun SearchBar(
                 )
             }
         },
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 12.dp)
             .padding(top = searchBarTopPadding, bottom = 6.dp)
@@ -414,6 +416,7 @@ fun SearchBar(
 @Composable
 fun SearchBarFake(
     label: String,
+    modifier: Modifier = Modifier,
     searchBarTopPadding: Dp = 12.dp,
     innerPadding: PaddingValues = PaddingValues(0.dp)
 ) {
@@ -433,7 +436,7 @@ fun SearchBarFake(
                 tint = colorScheme.onSurfaceContainerHigh,
             )
         },
-        modifier = Modifier
+        modifier = modifier
             .let { if (!enableBlur) it.background(colorScheme.surface) else it }
             .fillMaxWidth()
             .padding(horizontal = 12.dp)

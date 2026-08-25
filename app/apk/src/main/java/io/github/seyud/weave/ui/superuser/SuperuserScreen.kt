@@ -317,7 +317,7 @@ fun SuperuserScreen(
                                         }
                                     )
                             ) {
-                                SearchBarFake(uiSearchStatus.label, dynamicTopPadding)
+                                SearchBarFake(uiSearchStatus.label, searchBarTopPadding = dynamicTopPadding)
                             }
                         },
                         actions = {
@@ -374,7 +374,7 @@ fun SuperuserScreen(
                             .attachBarBlurBackdrop(blurBackdrop),
                         isRefreshing = uiState.isRefreshing,
                         pullToRefreshState = pullToRefreshState,
-                        contentPadding = PaddingValues(top = innerPadding.calculateTopPadding() + boxHeight.value + 6.dp),
+                        contentPadding = PaddingValues(top = innerPadding.calculateTopPadding() + boxHeight + 6.dp),
                         topAppBarScrollBehavior = scrollBehavior,
                         refreshTexts = listOf(
                             stringResource(CoreR.string.pull_down_to_refresh),
@@ -393,7 +393,7 @@ fun SuperuserScreen(
                             uiState.isLoading && uiState.policies.isEmpty() -> {
                                 LoadingContent(
                                     modifier = Modifier.padding(
-                                        top = innerPadding.calculateTopPadding() + boxHeight.value + 6.dp,
+                                        top = innerPadding.calculateTopPadding() + boxHeight + 6.dp,
                                         start = innerPadding.calculateStartPadding(layoutDirection),
                                         end = innerPadding.calculateEndPadding(layoutDirection),
                                         bottom = contentBottomPadding
@@ -403,7 +403,7 @@ fun SuperuserScreen(
                             uiState.policies.isEmpty() -> {
                                 EmptyContent(
                                     modifier = Modifier.padding(
-                                        top = innerPadding.calculateTopPadding() + boxHeight.value + 6.dp,
+                                        top = innerPadding.calculateTopPadding() + boxHeight + 6.dp,
                                         start = innerPadding.calculateStartPadding(layoutDirection),
                                         end = innerPadding.calculateEndPadding(layoutDirection),
                                         bottom = contentBottomPadding
@@ -424,7 +424,7 @@ fun SuperuserScreen(
                                     viewModel = viewModel,
                                     blurBackdrop = blurBackdrop,
                                     contentBottomPadding = contentBottomPadding,
-                                    topContentPadding = innerPadding.calculateTopPadding() + boxHeight.value + 6.dp,
+                                    topContentPadding = innerPadding.calculateTopPadding() + boxHeight + 6.dp,
                                     expandedPolicyKeys = expandedPolicyKeys,
                                     onToggleExpanded = { key ->
                                         expandedPolicyKeys = if (expandedPolicyKeys.contains(key)) {

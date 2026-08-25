@@ -76,7 +76,7 @@ internal fun ModuleScreenContent(
             isRefreshing = uiState.isRefreshing,
             pullToRefreshState = pullToRefreshState,
             contentPadding = PaddingValues(
-                top = innerPadding.calculateTopPadding() + boxHeight.value + 6.dp,
+                top = innerPadding.calculateTopPadding() + boxHeight + 6.dp,
             ),
             topAppBarScrollBehavior = scrollBehavior,
             refreshTexts = listOf(
@@ -96,7 +96,7 @@ internal fun ModuleScreenContent(
                 uiState.isLoading && uiState.modules.isEmpty() -> {
                     LoadingContent(
                         modifier = Modifier.padding(
-                            top = innerPadding.calculateTopPadding() + boxHeight.value + 6.dp,
+                            top = innerPadding.calculateTopPadding() + boxHeight + 6.dp,
                             start = innerPadding.calculateStartPadding(layoutDirection),
                             end = innerPadding.calculateEndPadding(layoutDirection),
                             bottom = contentBottomPadding,
@@ -108,7 +108,7 @@ internal fun ModuleScreenContent(
                     EmptyContent(
                         onInstallPressed = onInstallPressed,
                         modifier = Modifier.padding(
-                            top = innerPadding.calculateTopPadding() + boxHeight.value + 6.dp,
+                            top = innerPadding.calculateTopPadding() + boxHeight + 6.dp,
                             start = innerPadding.calculateStartPadding(layoutDirection),
                             end = innerPadding.calculateEndPadding(layoutDirection),
                             bottom = contentBottomPadding,
@@ -139,7 +139,7 @@ internal fun ModuleScreenContent(
                         onToggleModuleRemove = onToggleModuleRemove,
                         onHideModule = onHideModule,
                         onRevealModule = onRevealModule,
-                        topContentPadding = innerPadding.calculateTopPadding() + boxHeight.value + 6.dp,
+                        topContentPadding = innerPadding.calculateTopPadding() + boxHeight + 6.dp,
                         contentBottomPadding = contentBottomPadding,
                         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
                         listState = listState,
