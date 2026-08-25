@@ -66,7 +66,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
-import com.topjohnwu.superuser.Shell
 import io.github.seyud.weave.core.Config
 import io.github.seyud.weave.core.model.su.SuPolicy
 import io.github.seyud.weave.ui.component.AppIconImage
@@ -114,9 +113,7 @@ import io.github.seyud.weave.arch.BaseViewModel.BaseEvent
 import io.github.seyud.weave.ui.component.ObserveAsEvents
 import io.github.seyud.weave.ui.component.ScrollToTopOnChange
 import io.github.seyud.weave.ui.component.showSnackbarEvent
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import top.yukonga.miuix.kmp.basic.SnackbarHostState
 import kotlin.math.roundToInt
 
@@ -276,7 +273,8 @@ fun SuperuserScreen(
                         },
                         onUpdateNotify = { key -> viewModel.toggleNotifyByKey(key) },
                         onUpdateLogging = { key -> viewModel.toggleLogByKey(key) },
-                        onUpdatePolicy = { key, policy -> viewModel.updatePolicyByKey(key, policy) }
+                        onUpdatePolicy = { key, policy -> viewModel.updatePolicyByKey(key, policy) },
+                        onAppAction = { action, packageName -> viewModel.performAppAction(action, packageName) }
                     )
                 }
             },
@@ -547,6 +545,7 @@ private fun PolicyList(
                     onUpdateNotify = { viewModel.toggleNotifyByKey(policyKey) },
                     onUpdateLogging = { viewModel.toggleLogByKey(policyKey) },
                     onUpdatePolicy = { policy -> viewModel.updatePolicyByKey(policyKey, policy) },
+                    onAppAction = { action, packageName -> viewModel.performAppAction(action, packageName) },
                     modifier = Modifier
                         .zIndex(-index.toFloat())
                         .animateItem(
@@ -579,6 +578,7 @@ private fun LazyListScope.policyItems(
     onUpdateNotify: (String) -> Unit,
     onUpdateLogging: (String) -> Unit,
     onUpdatePolicy: (String, Int) -> Unit,
+    onAppAction: (SuperuserViewModel.AppAction, String) -> Unit,
 ) {
     itemsIndexed(
         items = policies,
@@ -594,6 +594,7 @@ private fun LazyListScope.policyItems(
             onUpdateNotify = { onUpdateNotify(policyKey) },
             onUpdateLogging = { onUpdateLogging(policyKey) },
             onUpdatePolicy = { policy -> onUpdatePolicy(policyKey, policy) },
+            onAppAction = onAppAction,
             modifier = Modifier
                 .zIndex(-index.toFloat())
                 .animateItem(
@@ -620,9 +621,9 @@ private fun PolicyItem(
     onUpdateNotify: () -> Unit,
     onUpdateLogging: () -> Unit,
     onUpdatePolicy: (Int) -> Unit,
+    onAppAction: (SuperuserViewModel.AppAction, String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val scope = rememberCoroutineScope()
     val cardAlpha = if (item.isEnabled) 1f else 0.5f
     val hasPolicyRecord = item.policy != SuPolicy.QUERY
     val isAllowed = item.policy >= SuPolicy.ALLOW
@@ -793,17 +794,17 @@ private fun PolicyItem(
                     DropdownItem(
                         text = stringResource(CoreR.string.su_action_launch),
                         icon = { m -> Icon(modifier = m, imageVector = Icons.Filled.PlayArrow, contentDescription = null) },
-                        onClick = { scope.launch { launchApp(item.packageName) } }
+                        onClick = { onAppAction(SuperuserViewModel.AppAction.Launch, item.packageName) }
                     ),
                     DropdownItem(
                         text = stringResource(CoreR.string.su_action_force_stop),
                         icon = { m -> Icon(modifier = m, imageVector = Icons.Filled.Stop, contentDescription = null) },
-                        onClick = { scope.launch { forceStopApp(item.packageName) } }
+                        onClick = { onAppAction(SuperuserViewModel.AppAction.ForceStop, item.packageName) }
                     ),
                     DropdownItem(
                         text = stringResource(CoreR.string.su_action_restart),
                         icon = { m -> Icon(modifier = m, imageVector = Icons.Filled.Refresh, contentDescription = null) },
-                        onClick = { scope.launch { restartApp(item.packageName) } }
+                        onClick = { onAppAction(SuperuserViewModel.AppAction.Restart, item.packageName) }
                     )
                 )
                 ListPopupColumn {
@@ -905,17 +906,4 @@ private fun VerticalDivider(
             .padding(horizontal = 4.dp),
         color = MiuixTheme.colorScheme.dividerLine
     )
-}
-
-private suspend fun launchApp(packageName: String) = withContext(Dispatchers.IO) {
-    Shell.cmd("cmd package resolve-activity --brief $packageName | tail -n 1 | xargs cmd activity start-activity -n").exec()
-}
-
-private suspend fun forceStopApp(packageName: String) = withContext(Dispatchers.IO) {
-    Shell.cmd("am force-stop $packageName").exec()
-}
-
-private suspend fun restartApp(packageName: String) {
-    forceStopApp(packageName)
-    launchApp(packageName)
 }

@@ -7,6 +7,7 @@ import android.content.pm.PackageManager.MATCH_UNINSTALLED_PACKAGES
 import android.os.Process
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.viewModelScope
+import com.topjohnwu.superuser.Shell
 import io.github.seyud.weave.arch.AsyncLoadViewModel
 import io.github.seyud.weave.core.AppContext
 import io.github.seyud.weave.core.Config
@@ -754,6 +755,43 @@ class SuperuserViewModel internal constructor(
             AuthEvent { updateState() }.publish()
         } else {
             updateState()
+        }
+    }
+
+    /**
+     * 策略卡片菜单触发的应用级操作（启动 / 强停 / 重启）。
+     * shell 操作收敛在 ViewModel 内，UI 层不再直接接触 Shell。
+     */
+    enum class AppAction { Launch, ForceStop, Restart }
+
+    fun performAppAction(action: AppAction, packageName: String) {
+        when (action) {
+            AppAction.Launch -> launchApp(packageName)
+            AppAction.ForceStop -> forceStopApp(packageName)
+            AppAction.Restart -> restartApp(packageName)
+        }
+    }
+
+    private fun launchApp(packageName: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            Shell.cmd(
+                "cmd package resolve-activity --brief $packageName | tail -n 1 | xargs cmd activity start-activity -n"
+            ).exec()
+        }
+    }
+
+    private fun forceStopApp(packageName: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            Shell.cmd("am force-stop $packageName").exec()
+        }
+    }
+
+    private fun restartApp(packageName: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            Shell.cmd("am force-stop $packageName").exec()
+            Shell.cmd(
+                "cmd package resolve-activity --brief $packageName | tail -n 1 | xargs cmd activity start-activity -n"
+            ).exec()
         }
     }
 }

@@ -24,11 +24,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -36,12 +33,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import io.github.seyud.weave.core.ktx.toast
 import io.github.seyud.weave.core.ktx.timeFormatStandard
 import io.github.seyud.weave.core.ktx.toTime
 import io.github.seyud.weave.core.utils.MediaStoreUtils
 import io.github.seyud.weave.core.utils.MediaStoreUtils.outputStream
-import com.topjohnwu.superuser.Shell
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -57,7 +55,6 @@ import top.yukonga.miuix.kmp.icon.MiuixIcons
 import top.yukonga.miuix.kmp.icon.extended.Back
 import top.yukonga.miuix.kmp.icon.extended.Download
 import top.yukonga.miuix.kmp.theme.MiuixTheme
-import java.io.IOException
 import io.github.seyud.weave.core.R as CoreR
 
 /**
@@ -91,10 +88,10 @@ fun ActionScreen(
     val scope = rememberCoroutineScope()
     val listState = rememberLazyListState()
 
-    // 状态管理
-    var actionState by remember { mutableStateOf(ActionState.RUNNING) }
-    val consoleItems = remember { mutableStateListOf<String>() }
-    val logItems = remember { mutableStateListOf<String>() }
+    // 状态管理：执行状态与输出收敛在 ActionViewModel（旋转屏幕/重进页面不丢失）
+    val viewModel: ActionViewModel = viewModel()
+    val actionState by viewModel.actionState.collectAsStateWithLifecycle()
+    val consoleLines by viewModel.console.collectAsStateWithLifecycle()
     val exitAction = remember(activity, fromShortcut, onNavigateBack) {
         {
             if (fromShortcut && activity != null) {
@@ -117,55 +114,28 @@ fun ActionScreen(
         }
     }
 
-    // 执行操作命令
+    // 执行操作命令（幂等：同一模块运行中重复触发不会重复执行）
+    // 完成提示通过订阅状态流转发出，避免重进页面时回放上一次的成功提示
+    val doneActionText = stringResource(CoreR.string.done_action, moduleName)
     LaunchedEffect(moduleId) {
-        scope.launch(Dispatchers.IO) {
-            try {
-                val outItems = object : com.topjohnwu.superuser.CallbackList<String>() {
-                    override fun onAddElement(e: String?) {
-                        e ?: return
-                        consoleItems.add(e)
-                        logItems.add(e)
-                    }
-                }
-
-                val success = Shell.cmd("run_action '$moduleId'")
-                    .to(outItems, logItems)
-                    .exec().isSuccess
-
-                withContext(Dispatchers.Main) {
-                    actionState = if (success) ActionState.SUCCESS else ActionState.FAILED
-                }
-            } catch (e: IOException) {
-                Timber.e(e)
-                withContext(Dispatchers.Main) {
-                    actionState = ActionState.FAILED
-                }
+        viewModel.startRunAction(moduleId)
+        viewModel.actionState.collect { state ->
+            if (state == ActionState.SUCCESS) {
+                context.toast(doneActionText, Toast.LENGTH_SHORT)
             }
         }
     }
 
     // 自动滚动到底部
-    LaunchedEffect(consoleItems.size) {
-        if (consoleItems.isNotEmpty()) {
-            listState.animateScrollToItem(consoleItems.size - 1)
+    LaunchedEffect(consoleLines.size) {
+        if (consoleLines.isNotEmpty()) {
+            listState.animateScrollToItem(consoleLines.size - 1)
         }
     }
 
     // 处理返回键
     BackHandler(enabled = actionState == ActionState.RUNNING) {
         // 运行中时不允许返回
-    }
-
-    // 显示完成提示
-    val doneActionText = stringResource(CoreR.string.done_action, moduleName)
-    LaunchedEffect(actionState) {
-        if (actionState == ActionState.SUCCESS) {
-            context.toast(
-                doneActionText,
-                Toast.LENGTH_SHORT
-            )
-        }
     }
 
     Scaffold(
@@ -200,8 +170,9 @@ fun ActionScreen(
                                             System.currentTimeMillis().toTime(timeFormatStandard)
                                         )
                                         val file = MediaStoreUtils.getFile(fileName)
+                                        val logSnapshot = viewModel.copyLog()
                                         file.uri.outputStream().bufferedWriter().use { writer ->
-                                            logItems.forEach {
+                                            logSnapshot.forEach {
                                                 writer.write(it)
                                                 writer.newLine()
                                             }
@@ -240,7 +211,7 @@ fun ActionScreen(
                     modifier = Modifier.fillMaxSize(),
                     contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
                 ) {
-                    items(consoleItems) { item ->
+                    items(consoleLines) { item ->
                         Text(
                             text = item,
                             fontFamily = FontFamily.Monospace,
