@@ -4,7 +4,7 @@ export default defineConfig({
   title: 'WeaveMask',
   base: '/WeaveMask/',
   sitemap: {
-    hostname: 'https://weavemask.github.io'
+    hostname: 'https://seyud.github.io/WeaveMask/'
   },
   locales: {
     root: {
@@ -104,6 +104,15 @@ export default defineConfig({
   },
   head: [
     ['link', { rel: 'icon', type: 'image/png', href: '/WeaveMask/logo.png' }],
+    // Cloudflare Web Analytics
+    [
+      'script',
+      {
+        type: 'module',
+        src: 'https://static.cloudflareinsights.com/beacon.min.js',
+        'data-cf-beacon': JSON.stringify({ token: '7a60b306ee8f46f38f2699681b26453e' })
+      }
+    ],
     [
       'script',
       {},
