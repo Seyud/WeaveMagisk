@@ -2,12 +2,20 @@
 layout: home
 title: 首页
 
+head:
+  # LCP 优化：高优先级预载 Hero 图（head 里的 URL 不会自动补 base，需手写前缀）
+  - - link
+    - rel: preload
+      as: image
+      href: /WeaveMask/logo.webp
+      fetchpriority: high
+
 hero:
   name: WeaveMask
   text: 差异化与功能改进 Magisk 分支
   tagline: ""
   image:
-    src: /logo.png
+    src: /logo.webp
     alt: WeaveMask
   actions:
     - theme: brand
