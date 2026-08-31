@@ -117,13 +117,23 @@ export default defineConfig({
       'script',
       {},
       `;(() => {
-        try { if (localStorage.getItem('lang-pref:/WeaveMask/')) return } catch (e) {}
         const base = '/WeaveMask/'
         const path = location.pathname
         if (!path.startsWith(base)) return
         const sub = path.slice(base.length)
-        if (sub.startsWith('zh_CN/') || sub === 'zh_CN') return
-        if ((navigator.language || '').toLowerCase().startsWith('zh')) {
+        const cur = sub.startsWith('zh_CN/') || sub === 'zh_CN'
+        let pref = null
+        try { pref = localStorage.getItem('lang-pref:/WeaveMask/') } catch (e) {}
+        if (pref === 'zh' || pref === 'en') {
+          if (pref === 'zh' && !cur) {
+            location.replace(base + 'zh_CN/' + sub + location.search + location.hash)
+          } else if (pref === 'en' && cur) {
+            let rest = sub === 'zh_CN' ? '' : sub.slice(6)
+            location.replace(base + rest + location.search + location.hash)
+          }
+          return
+        }
+        if (!cur && (navigator.language || '').toLowerCase().startsWith('zh')) {
           location.replace(base + 'zh_CN/' + sub + location.search + location.hash)
         }
       })()
