@@ -117,16 +117,36 @@ export default defineConfig({
       'script',
       {},
       `;(() => {
+        try { if (localStorage.getItem('lang-pref:/WeaveMask/')) return } catch (e) {}
         const base = '/WeaveMask/'
-        const path = window.location.pathname
-        if (path.startsWith(base + 'zh_CN/') || path === base + 'zh_CN') return
-        if (path.startsWith(base + 'guide/') || path === base) {
-          const lang = (navigator.language || '').toLowerCase()
-          if (lang.startsWith('zh')) {
-            const sub = path.slice(base.length)
-            window.location.replace(base + 'zh_CN/' + sub)
-          }
+        const path = location.pathname
+        if (!path.startsWith(base)) return
+        const sub = path.slice(base.length)
+        if (sub.startsWith('zh_CN/') || sub === 'zh_CN') return
+        if ((navigator.language || '').toLowerCase().startsWith('zh')) {
+          location.replace(base + 'zh_CN/' + sub + location.search + location.hash)
         }
+      })()
+      ;(() => {
+        const base = '/WeaveMask/'
+        document.addEventListener('click', e => {
+          const a = e.target && e.target.closest ? e.target.closest('a') : null
+          if (!a) return
+          const href = a.getAttribute('href') || ''
+          if (!href.startsWith(base)) return
+          const sub = href.slice(base.length)
+          const cur = location.pathname.slice(base.length)
+          const t = sub.startsWith('zh_CN/') || sub === 'zh_CN'
+          const c = cur.startsWith('zh_CN/') || cur === 'zh_CN'
+          if (t !== c) {
+            const lang = t ? 'zh' : 'en'
+            const auto = (navigator.language || '').toLowerCase().startsWith('zh') ? 'zh' : 'en'
+            try {
+              if (lang === auto) localStorage.removeItem('lang-pref:/WeaveMask/')
+              else localStorage.setItem('lang-pref:/WeaveMask/', lang)
+            } catch (err) {}
+          }
+        })
       })()`
     ]
   ]
