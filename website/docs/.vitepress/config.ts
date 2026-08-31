@@ -139,7 +139,7 @@ export default defineConfig({
       })()
       ;(() => {
         const base = '/WeaveMask/'
-        document.addEventListener('click', e => {
+        const onPick = e => {
           const a = e.target && e.target.closest ? e.target.closest('a') : null
           if (!a) return
           const href = a.getAttribute('href') || ''
@@ -163,7 +163,10 @@ export default defineConfig({
               else localStorage.setItem('lang-pref:/WeaveMask/', lang)
             } catch (err) {}
           }
-        })
+        }
+        // capture 阶段 + pointerdown 双保险：早于扩展对 DOM/事件的包装
+        document.addEventListener('click', onPick, true)
+        document.addEventListener('pointerdown', onPick, true)
       })()`
     ]
   ]
