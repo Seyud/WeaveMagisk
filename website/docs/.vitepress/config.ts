@@ -133,7 +133,7 @@ export default defineConfig({
           const a = e.target && e.target.closest ? e.target.closest('a') : null
           if (!a) return
           const href = a.getAttribute('href') || ''
-          let sub = ''
+          let sub = null
           if (href.startsWith(base)) sub = href.slice(base.length)
           else {
             try {
@@ -141,7 +141,7 @@ export default defineConfig({
               if (u.origin === location.origin && u.pathname.startsWith(base)) sub = u.pathname.slice(base.length)
             } catch (err) {}
           }
-          if (!sub) return
+          if (sub === null) return
           const cur = location.pathname.slice(base.length)
           const t = sub.startsWith('zh_CN/') || sub === 'zh_CN'
           const c = cur.startsWith('zh_CN/') || cur === 'zh_CN'
