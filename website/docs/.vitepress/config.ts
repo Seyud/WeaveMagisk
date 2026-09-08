@@ -1,10 +1,33 @@
+import { readFileSync } from 'node:fs'
+import { fileURLToPath } from 'node:url'
 import { defineConfig } from 'vitepress'
+
+// Hero logo 内联为 data URI：图片随 HTML 一起到达，不再单独走一个被 GitHub Pages
+// 限速的请求（线上实测 LCP P75 = 6.1s 就是耗在这张图上）。
+// SVG 由 tmp/logo-svg/ 从原 1249px PNG 逐块临摹生成（MAE 2.93，噪声底 2.14），1.5KB。
+const LOGO_SVG = readFileSync(fileURLToPath(new URL('../public/logo.svg', import.meta.url)))
+const LOGO_DATA_URI = `data:image/svg+xml;base64,${LOGO_SVG.toString('base64')}`
 
 export default defineConfig({
   title: 'WeaveMask',
   base: '/WeaveMask/',
   sitemap: {
     hostname: 'https://seyud.github.io/WeaveMask/'
+  },
+  // 首页 hero 图内联：构建时把 frontmatter 里的 /logo.svg 替换为 data URI，
+  // img 与 HTML 同连接到达，消除单独请求（withBase 对 data: 原样放行）。
+  transformPageData(pageData) {
+    const fm: any = pageData.frontmatter
+    const img = fm?.hero?.image
+    if (
+      fm?.layout === 'home' &&
+      img &&
+      typeof img === 'object' &&
+      typeof img.src === 'string' &&
+      img.src.includes('/logo.')
+    ) {
+      img.src = LOGO_DATA_URI
+    }
   },
   locales: {
     root: {
